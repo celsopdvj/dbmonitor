@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "943425794793",
+    "firebase_url": "https://dbmonitor-18cde.firebaseio.com",
+    "project_id": "dbmonitor-18cde",
+    "storage_bucket": "dbmonitor-18cde.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943425794793:android:b55a81f3791c444f2fb678",
+        "android_client_info": {
+          "package_name": "com.example.dbmonitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "943425794793-en76aiiclbq6ie9d23jvb9klu2k7om5o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQODGoE0TetU5E6KdfcLKa35PkkLyxBIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "943425794793-en76aiiclbq6ie9d23jvb9klu2k7om5o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
