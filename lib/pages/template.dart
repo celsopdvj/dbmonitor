@@ -13,16 +13,20 @@ class TemplatePage extends StatelessWidget {
   final Widget body;
   final String title;
   final bool leading;
+  final bool appBar;
 
-  const TemplatePage({this.body, this.title, this.leading = true});
+  const TemplatePage(
+      {this.body, this.title, this.leading = true, this.appBar = true});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.grey[850],
-      ),
+      appBar: appBar
+          ? AppBar(
+              title: Text(title),
+              backgroundColor: Colors.grey[850],
+            )
+          : null,
       backgroundColor: Colors.grey[850],
       body: this.body,
       drawer: !leading
