@@ -7,6 +7,7 @@ import 'package:dbmonitor/pages/tablespace.dart';
 import 'package:dbmonitor/pages/longops.dart';
 import 'package:dbmonitor/pages/topsql.dart';
 import 'package:dbmonitor/redux/globalvariables.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TemplatePage extends StatelessWidget {
@@ -14,9 +15,10 @@ class TemplatePage extends StatelessWidget {
   final String title;
   final bool leading;
   final bool appBar;
+  final bool signOut;
 
   const TemplatePage(
-      {this.body, this.title, this.leading = true, this.appBar = true});
+      {this.body, this.title, this.leading = true, this.appBar = true, this.signOut = true});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,14 @@ class TemplatePage extends StatelessWidget {
           ? AppBar(
               title: Text(title),
               backgroundColor: Colors.grey[850],
+              actions: signOut ? <Widget>[
+                IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                  },
+                )
+              ] : null,
             )
           : null,
       backgroundColor: Colors.grey[850],
@@ -40,7 +50,27 @@ class TemplatePage extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   children: <Widget>[
                     ListTile(
-                      contentPadding: EdgeInsets.fromLTRB(15, 20, 5, 5),
+                      contentPadding: EdgeInsets.fromLTRB(15, 30, 5, 0),
+                      leading: Icon(
+                        Icons.person_outline,
+                        color: Colors.white,
+                      ),
+                      title: FutureBuilder(
+                        future: FirebaseAuth.instance.currentUser(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            FirebaseUser user = snapshot.data;
+                            return Text(
+                              user.displayName,
+                              style: TextStyle(color: Colors.white),
+                            );
+                          }
+                          return Text("Loading...");
+                        },
+                      ),
+                      onTap: () {},
+                    ),
+                    ListTile(
                       leading: Icon(
                         Icons.storage,
                         color: Colors.white,
@@ -49,23 +79,12 @@ class TemplatePage extends StatelessWidget {
                         GlobalVariables.database?.name ?? "NO DATABASE",
                         style: TextStyle(color: Colors.white),
                       ),
-                      onTap: () {},
-                    ),
-                    const Divider(
-                      color: Colors.white,
-                    ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.home,
-                        color: Colors.white,
-                      ),
-                      title: Text(
-                        'Inicio',
-                        style: TextStyle(color: Colors.white),
-                      ),
                       onTap: () {
                         Navigator.popUntil(context, ModalRoute.withName('/'));
                       },
+                    ),
+                    const Divider(
+                      color: Colors.white,
                     ),
                     ListTile(
                       leading: Icon(

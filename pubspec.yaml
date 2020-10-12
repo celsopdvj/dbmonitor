@@ -36,6 +36,8 @@ dependencies:
   redux: ^4.0.0+3
   cloud_firestore: ^0.13.7
   flutter_highlight: ^0.6.0
+  crypto: ^2.1.0
+  firebase_auth: ^0.16.0
 
 dev_dependencies:
   flutter_test:

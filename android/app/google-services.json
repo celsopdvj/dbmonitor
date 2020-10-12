@@ -30,6 +30,13 @@
             {
               "client_id": "943425794793-en76aiiclbq6ie9d23jvb9klu2k7om5o.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "943425794793-5jnthvdcmndbfjisamdigaoqn9cd66td.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.celso.dbmonitor"
+              }
             }
           ]
         }

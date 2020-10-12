@@ -1,5 +1,6 @@
 import 'package:dbmonitor/pages/cadastro.dart';
 import 'package:dbmonitor/pages/template.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -10,6 +11,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  var cntEmail = TextEditingController();
+  var cntSenha = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
@@ -20,8 +24,9 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               buildTextField(
-                icon: Icons.email,
+                icon: Icons.alternate_email,
                 label: "Email",
+                controller: cntEmail,
                 validator: (value) {
                   if (value.isEmpty) {
                     return 'Informe o e-mail';
@@ -30,23 +35,47 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               buildTextField(
-                icon: Icons.lock,
-                label: "Senha",
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Informe a senha';
-                  }
-                  return null;
-                },
-              ),
+                  icon: Icons.lock_outline,
+                  label: "Senha",
+                  controller: cntSenha,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Informe a senha';
+                    }
+                    return null;
+                  },
+                  obscure: true),
               Padding(
                 padding: EdgeInsets.only(bottom: 20),
               ),
               Container(
                 width: MediaQuery.of(context).size.width,
-                child: RaisedButton(
-                  child: Text("Login"),
-                  onPressed: () => true,
+                child: Builder(
+                  builder: (ctx) => RaisedButton(
+                    child: Text("Login"),
+                    onPressed: () async {
+                      try {
+                        var result = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                                email: cntEmail.text, password: cntSenha.text);
+                        if (result.user == null) {
+                          Scaffold.of(ctx).showSnackBar(
+                            SnackBar(
+                              content: Text('Erro'),
+                              backgroundColor: Colors.red[50],
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        Scaffold.of(ctx).showSnackBar(
+                          SnackBar(
+                            content: Text('Erro'),
+                            backgroundColor: Colors.red[50],
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
               Padding(
@@ -85,9 +114,16 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget buildTextField({String label, IconData icon, Function validator}) {
+  Widget buildTextField(
+      {String label,
+      IconData icon,
+      Function validator,
+      bool obscure = false,
+      TextEditingController controller}) {
     return TextFormField(
       style: TextStyle(color: Colors.white),
+      obscureText: obscure,
+      controller: controller,
       decoration: InputDecoration(
         prefixIcon: Icon(
           icon,
