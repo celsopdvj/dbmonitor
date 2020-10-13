@@ -25,6 +25,12 @@ class DatabaseModel extends BaseModel {
   }
 
   @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) return false;
+    return other is DatabaseModel && other.name == name;
+  }
+
+  @override
   toMap() {
     var map = new Map<String, dynamic>();
     map['name'] = this.name;

@@ -1,4 +1,6 @@
+import 'package:dbmonitor/dialogs/customdialog.dart';
 import 'package:dbmonitor/pages/cadastro.dart';
+import 'package:dbmonitor/pages/password.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +33,16 @@ class _LoginPageState extends State<LoginPage> {
                   if (value.isEmpty) {
                     return 'Informe o e-mail';
                   }
+                  if (!RegExp(
+                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                      .hasMatch(value)) {
+                    return 'E-mail inválido';
+                  }
                   return null;
                 },
+              ),
+              SizedBox(
+                height: 5,
               ),
               buildTextField(
                   icon: Icons.lock_outline,
@@ -48,34 +58,39 @@ class _LoginPageState extends State<LoginPage> {
               Padding(
                 padding: EdgeInsets.only(bottom: 20),
               ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => PasswordPage()));
+                },
+                child: Text("Esqueci minha senha",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.normal,
+                    )),
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 8),
+              ),
               Container(
                 width: MediaQuery.of(context).size.width,
-                child: Builder(
-                  builder: (ctx) => RaisedButton(
-                    child: Text("Login"),
-                    onPressed: () async {
-                      try {
-                        var result = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                                email: cntEmail.text, password: cntSenha.text);
-                        if (result.user == null) {
-                          Scaffold.of(ctx).showSnackBar(
-                            SnackBar(
-                              content: Text('Erro'),
-                              backgroundColor: Colors.red[50],
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        Scaffold.of(ctx).showSnackBar(
-                          SnackBar(
-                            content: Text('Erro'),
-                            backgroundColor: Colors.red[50],
-                          ),
-                        );
+                child: RaisedButton(
+                  child: Text("Login"),
+                  onPressed: () async {
+                    try {
+                      var result = await FirebaseAuth.instance
+                          .signInWithEmailAndPassword(
+                              email: cntEmail.text, password: cntSenha.text);
+                      if (result.user == null) {
+                        CustomDialog.show(
+                            message: "Erro ao criar o usuário.",
+                            context: context);
                       }
-                    },
-                  ),
+                    } catch (e) {
+                      CustomDialog.show(message: e.code, context: context);
+                    }
+                  },
                 ),
               ),
               Padding(

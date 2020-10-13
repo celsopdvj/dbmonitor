@@ -2,6 +2,7 @@ import 'package:dbmonitor/models/databasemodel.dart';
 import 'package:dbmonitor/pages/databases.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:dbmonitor/redux/globalvariables.dart' as gv;
+import 'package:dbmonitor/repositories/databaserepository.dart';
 import 'package:flutter/material.dart';
 
 class SelectdbPage extends StatefulWidget {
@@ -12,21 +13,9 @@ class SelectdbPage extends StatefulWidget {
 }
 
 class _SelectdbPageState extends State<SelectdbPage> {
-  String dropdownValue = 'PROD';
+  DatabaseModel dropdownValue;
 
-  @override
-  void initState() {
-    var newDatabase = DatabaseModel();
-    newDatabase.host = "NOVO2";
-    newDatabase.name = dropdownValue;
-    newDatabase.port = 1521;
-    newDatabase.user = "NOVO2";
-    newDatabase.serviceName = "NOVO2";
-
-    gv.GlobalVariables.database = newDatabase;
-    gv.GlobalVariables.storeState.dispatch(gv.Actions.SwitchDatabase);
-    super.initState();
-  }
+  var dbRepo = DatabaseRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -43,39 +32,72 @@ class _SelectdbPageState extends State<SelectdbPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                DropdownButton<String>(
-                  value: dropdownValue,
-                  icon: Icon(Icons.arrow_drop_down),
-                  iconSize: 24,
-                  elevation: 16,
-                  dropdownColor: Colors.grey[800],
-                  style: TextStyle(color: Colors.white),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.white,
-                  ),
-                  onChanged: (String newValue) {
-                    setState(() {
-                      dropdownValue = newValue;
-                      var newDatabase = DatabaseModel();
-                      newDatabase.host = "NOVO2";
-                      newDatabase.name = newValue;
-                      newDatabase.port = 1521;
-                      newDatabase.user = "NOVO2";
-                      newDatabase.serviceName = "NOVO2";
+                StreamBuilder(
+                  stream: dbRepo.databases,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return DropdownButton<DatabaseModel>(
+                        hint: Text(
+                          "Selecione",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        value: dropdownValue,
+                        icon: Icon(Icons.arrow_drop_down),
+                        iconSize: 24,
+                        elevation: 16,
+                        dropdownColor: Colors.grey[800],
+                        style: TextStyle(color: Colors.white),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.white,
+                        ),
+                        onChanged: (DatabaseModel newValue) {
+                          setState(() {
+                            dropdownValue = newValue;
 
-                      gv.GlobalVariables.database = newDatabase;
-                      gv.GlobalVariables.storeState
-                          .dispatch(gv.Actions.SwitchDatabase);
-                    });
-                  },
-                  items: <String>['PROD', 'HOMOLOG', 'DESENV', 'TEST']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+                            gv.GlobalVariables.database = newValue;
+                            gv.GlobalVariables.storeState
+                                .dispatch(gv.Actions.SwitchDatabase);
+                          });
+                        },
+                        items: snapshot.data
+                            .map<DropdownMenuItem<DatabaseModel>>(
+                                (DatabaseModel value) {
+                          return DropdownMenuItem<DatabaseModel>(
+                            value: value,
+                            child: Text(value.name),
+                          );
+                        }).toList(),
+                      );
+                    }
+                    return DropdownButton<DatabaseModel>(
+                      hint: Text(
+                        "Carregando...",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      value: dropdownValue,
+                      icon: Icon(Icons.arrow_drop_down),
+                      iconSize: 24,
+                      elevation: 16,
+                      dropdownColor: Colors.grey[800],
+                      style: TextStyle(color: Colors.white),
+                      underline: Container(
+                        height: 2,
+                        color: Colors.white,
+                      ),
+                      onChanged: (DatabaseModel newValue) {
+                        return false;
+                      },
+                      items: <DatabaseModel>[]
+                          .map<DropdownMenuItem<DatabaseModel>>(
+                              (DatabaseModel value) {
+                        return DropdownMenuItem<DatabaseModel>(
+                          value: value,
+                          child: Text(value.name),
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
+                  },
                 ),
                 IconButton(
                   icon: Icon(

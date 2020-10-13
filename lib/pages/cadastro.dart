@@ -1,3 +1,4 @@
+import 'package:dbmonitor/dialogs/customdialog.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:flutter/material.dart';
 import 'package:dbmonitor/repositories/userrepository.dart';
@@ -55,6 +56,11 @@ class _CadastroPageState extends State<CadastroPage> {
                   if (value.isEmpty) {
                     return 'Informe o e-mail';
                   }
+                  if (!RegExp(
+                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                      .hasMatch(value)) {
+                    return 'E-mail inválido';
+                  }
                   return null;
                 },
               ),
@@ -88,53 +94,42 @@ class _CadastroPageState extends State<CadastroPage> {
                   return null;
                 },
               ),
-              Builder(
-                builder: (ctx) => Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: RaisedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState.validate()) {
-                        try {
-                          var res = await FirebaseAuth.instance
-                              .fetchSignInMethodsForEmail(email: cntEmail.text);
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: RaisedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState.validate()) {
+                      try {
+                        var res = await FirebaseAuth.instance
+                            .fetchSignInMethodsForEmail(email: cntEmail.text);
 
-                          if (res.length > 0) {
-                            Scaffold.of(ctx).showSnackBar(
-                              SnackBar(
-                                content: Text('E-mail já cadastrado'),
-                                backgroundColor: Colors.red[50],
-                              ),
-                            );
-                            return;
-                          }
-
-                          AuthResult result = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                                  email: cntEmail.text,
-                                  password: cntSenha.text);
-
-                          UserUpdateInfo info = UserUpdateInfo();
-                          info.displayName = cntNome.text;
-                          result.user.updateProfile(info);
-
-                          Scaffold.of(ctx).showSnackBar(
-                            SnackBar(
-                              content: Text('Sucesso!'),
-                              backgroundColor: Colors.green[100],
-                            ),
-                          );
-                        } catch (e) {
-                          Scaffold.of(ctx).showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString()),
-                              backgroundColor: Colors.red[50],
-                            ),
-                          );
+                        if (res.length > 0) {
+                          CustomDialog.show(
+                              message: "E-mail já cadastrado",
+                              context: context);
+                          return;
                         }
+
+                        AuthResult result = await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                                email: cntEmail.text, password: cntSenha.text);
+
+                        UserUpdateInfo info = UserUpdateInfo();
+                        info.displayName = cntNome.text;
+                        result.user.updateProfile(info);
+
+                        CustomDialog.show(
+                            message: "Conta criada com sucesso!",
+                            context: context,
+                            error: false);
+
+                        Navigator.of(context).pop();
+                      } catch (e) {
+                        CustomDialog.show(message: e.code, context: context);
                       }
-                    },
-                    child: Text('Cadastrar'),
-                  ),
+                    }
+                  },
+                  child: Text('Cadastrar'),
                 ),
               ),
             ],
