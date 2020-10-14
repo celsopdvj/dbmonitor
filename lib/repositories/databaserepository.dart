@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dbmonitor/models/databasemodel.dart';
+import 'package:dbmonitor/redux/globalvariables.dart';
 
 class DatabaseRepository {
   CollectionReference _collection = Firestore.instance.collection('database');
@@ -16,5 +17,6 @@ class DatabaseRepository {
   Stream<List<DatabaseModel>> get databases =>
       _collection.snapshots().map((query) => query.documents
           .map<DatabaseModel>((document) => DatabaseModel.fromMap(document))
+          .where((db) => db.uiduser == GlobalVariables.uuidUser)
           .toList());
 }

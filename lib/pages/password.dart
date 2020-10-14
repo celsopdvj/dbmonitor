@@ -60,6 +60,11 @@ class _PasswordPageState extends State<PasswordPage> {
                                   message: "E-mail não cadastrado.",
                                   context: context);
                             }
+                            if (e.code == "ERROR_INVALID_EMAIL") {
+                              CustomDialog.show(
+                                  message: "E-mail mal formatado.",
+                                  context: context);
+                            }
                             CustomDialog.show(
                                 message: e.code, context: context);
                           }

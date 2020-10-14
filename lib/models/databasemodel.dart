@@ -8,6 +8,7 @@ class DatabaseModel extends BaseModel {
   String serviceName;
   String user;
   String password;
+  String uiduser;
 
   String _documentId;
 
@@ -22,6 +23,7 @@ class DatabaseModel extends BaseModel {
     this.serviceName = document.data["serviceName"];
     this.user = document.data["user"];
     this.password = document.data["password"];
+    this.uiduser = document.data["uiduser"];
   }
 
   @override
@@ -39,9 +41,13 @@ class DatabaseModel extends BaseModel {
     map['serviceName'] = this.serviceName;
     map['user'] = this.user;
     map['password'] = this.password;
+    map['uiduser'] = this.uiduser;
     return map;
   }
 
   @override
   String documentId() => _documentId;
+
+  @override
+  int get hashCode => super.hashCode;
 }

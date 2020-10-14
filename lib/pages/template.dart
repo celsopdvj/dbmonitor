@@ -18,7 +18,11 @@ class TemplatePage extends StatelessWidget {
   final bool signOut;
 
   const TemplatePage(
-      {this.body, this.title, this.leading = true, this.appBar = true, this.signOut = true});
+      {this.body,
+      this.title,
+      this.leading = true,
+      this.appBar = true,
+      this.signOut = true});
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +31,18 @@ class TemplatePage extends StatelessWidget {
           ? AppBar(
               title: Text(title),
               backgroundColor: Colors.grey[850],
-              actions: signOut ? <Widget>[
-                IconButton(
-                  icon: Icon(Icons.exit_to_app),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                  },
-                )
-              ] : null,
+              actions: signOut
+                  ? <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.exit_to_app),
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          GlobalVariables.database = null;
+                          GlobalVariables.uuidUser = "";
+                        },
+                      )
+                    ]
+                  : null,
             )
           : null,
       backgroundColor: Colors.grey[850],
@@ -51,18 +59,36 @@ class TemplatePage extends StatelessWidget {
                   children: <Widget>[
                     ListTile(
                       contentPadding: EdgeInsets.fromLTRB(15, 30, 5, 0),
-                      leading: Icon(
-                        Icons.person_outline,
-                        color: Colors.white,
+                      leading: CircleAvatar(
+                        child: Icon(
+                          Icons.person_rounded,
+                          color: Colors.white,
+                        ),
                       ),
                       title: FutureBuilder(
                         future: FirebaseAuth.instance.currentUser(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             FirebaseUser user = snapshot.data;
-                            return Text(
-                              user.displayName,
-                              style: TextStyle(color: Colors.white),
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  user.displayName,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
+                                ),
+                                Text(
+                                  user.email,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
                             );
                           }
                           return Text("Loading...");
@@ -70,13 +96,17 @@ class TemplatePage extends StatelessWidget {
                       ),
                       onTap: () {},
                     ),
+                    const Divider(
+                      color: Colors.white,
+                    ),
                     ListTile(
                       leading: Icon(
                         Icons.storage,
                         color: Colors.white,
                       ),
                       title: Text(
-                        GlobalVariables.database?.name ?? "NO DATABASE",
+                        GlobalVariables.database?.name ??
+                            "Nenhum banco de dados selecionado",
                         style: TextStyle(color: Colors.white),
                       ),
                       onTap: () {
