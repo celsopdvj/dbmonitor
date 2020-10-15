@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dbmonitor/api_models/performancemodel.dart';
+import 'package:dbmonitor/api_requests/performancereq.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -41,7 +43,6 @@ class _PerformancePageState extends State<PerformancePage> {
 
   Future<Null> updateData() {
     setState(() {
-      _createSampleData();
       resetTimer();
     });
     return Future.delayed(Duration(seconds: 1), () => null);
@@ -91,6 +92,7 @@ class _PerformancePageState extends State<PerformancePage> {
   static var corHd = charts.MaterialPalette.blue.shadeDefault;
   static var corWait = charts.MaterialPalette.yellow.shadeDefault;
   static var corIo = charts.MaterialPalette.purple.shadeDefault;
+  var request = PerformanceRequest();
 
   @override
   Widget build(BuildContext context) {
@@ -100,11 +102,15 @@ class _PerformancePageState extends State<PerformancePage> {
           onRefresh: updateData,
           child: ListView(
             children: [
-              buildGraph("Uso de CPU", seriesCpu),
-              buildGraph("Uso de RAM", seriesRam),
-              buildGraph("Uso de HD", seriesHd),
-              buildGraph("User Wait", seriesWait),
-              buildGraph("User IO", seriesIo),
+              FutureBuilder(
+                future: request.fetchPerformance(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return buildGraph("CPU", snapshot.data);
+                  }
+                  return Text("carregando");
+                },
+              ),
               Container(
                 child: Text(
                   'Próxima atualização em $_start segudos',
@@ -118,7 +124,7 @@ class _PerformancePageState extends State<PerformancePage> {
         ));
   }
 
-  Widget buildGraph(String title, charts.Series serie) {
+  Widget buildGraph(String title, List<PerformanceModel> data) {
     return Card(
       color: Colors.grey[800],
       child: Container(
@@ -138,7 +144,7 @@ class _PerformancePageState extends State<PerformancePage> {
               Container(
                 height: MediaQuery.of(context).size.height * .33,
                 child: charts.TimeSeriesChart(
-                  [serie],
+                  [buildSeries("cpu", corCpu, data)],
                   animate: animate,
                   selectionModels: [
                     charts.SelectionModelConfig(
@@ -185,58 +191,34 @@ class _PerformancePageState extends State<PerformancePage> {
     );
   }
 
-  static List<LinearSales> _getRandomData() {
-    var rng = Random();
+  List<LinearSerie> compileData(String id, List<PerformanceModel> data) {
+    switch (id) {
+      case "cpu":
+        return data
+            .map((e) => LinearSerie(DateTime.parse(e.sampletime), e.cpu))
+            .toList();
+        break;
+      default:
+    }
 
-    return [
-      LinearSales(DateTime(2020, 9, 1, 10, 0), rng.nextInt(100)),
-      LinearSales(DateTime(2020, 9, 1, 10, 10), rng.nextInt(100)),
-      LinearSales(DateTime(2020, 9, 1, 10, 20), rng.nextInt(100)),
-      LinearSales(DateTime(2020, 9, 1, 10, 30), rng.nextInt(100)),
-      LinearSales(DateTime(2020, 9, 1, 10, 40), rng.nextInt(100)),
-      LinearSales(DateTime(2020, 9, 1, 10, 50), rng.nextInt(100)),
-      LinearSales(DateTime(2020, 9, 1, 11, 0), rng.nextInt(100)),
-    ];
+    return null;
   }
 
-  static charts.Series<LinearSales, DateTime> sampleData(
-      String id, dynamic cor) {
-    return charts.Series<LinearSales, DateTime>(
+  charts.Series<LinearSerie, DateTime> buildSeries(
+      String id, dynamic cor, List<PerformanceModel> data) {
+    return charts.Series<LinearSerie, DateTime>(
       id: id,
-      domainFn: (LinearSales sales, _) => sales.hora,
-      measureFn: (LinearSales sales, _) => sales.medida,
-      data: _getRandomData(),
+      domainFn: (LinearSerie serie, _) => serie.hora,
+      measureFn: (LinearSerie serie, _) => serie.medida,
+      data: compileData(id, data),
       colorFn: (_, __) => cor,
     )..setAttribute(charts.rendererIdKey, 'customArea');
   }
-
-  static void _createSampleData() {
-    seriesCpu = sampleData("CPU", corCpu);
-    seriesRam = sampleData("RAM", corRam);
-    seriesHd = sampleData("HD", corHd);
-    seriesWait = sampleData("Wait", corWait);
-    seriesIo = sampleData("IO", corIo);
-  }
-
-  List<Widget> buildGraphLegend(String title, dynamic cor) {
-    return [
-      Container(
-        margin: EdgeInsetsDirectional.only(end: 5, start: 5),
-        color: Color.fromARGB(cor.a, cor.r, cor.g, cor.b),
-        child: SizedBox(
-          height: 15,
-          width: 15,
-        ),
-      ),
-      Text(title)
-    ];
-  }
 }
 
-/// Sample linear data type.
-class LinearSales {
+class LinearSerie {
   final DateTime hora;
-  final int medida;
+  final double medida;
 
-  LinearSales(this.hora, this.medida);
+  LinearSerie(this.hora, this.medida);
 }
