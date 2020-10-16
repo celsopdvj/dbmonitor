@@ -9,10 +9,15 @@ class PerformanceRequest {
       final response =
           await http.get('http://10.0.2.2:8000/api/graph?minutes=30');
 
+      print("acessando api");
+
       if (response.statusCode == 200) {
         List retorno = jsonDecode(response.body);
 
-        return retorno.map((el) => PerformanceModel.fromJson(el));
+        return retorno.map((el) {
+          Map<String, dynamic> dado = el;
+          return PerformanceModel.fromJson(dado);
+        }).toList();
       } else {
         throw Exception('Failed to load album');
       }

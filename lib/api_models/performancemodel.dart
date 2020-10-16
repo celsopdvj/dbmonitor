@@ -2,19 +2,19 @@ class PerformanceModel {
   String sampletime;
   double cpu;
   double bcpu;
-  int cpuorawait;
-  int scheduler;
-  int uio;
-  int sio;
-  int concurrency;
-  int application;
+  double cpuorawait;
+  double scheduler;
+  double uio;
+  double sio;
+  double concurrency;
+  double application;
   double commit;
-  int configuration;
-  int administrative;
+  double configuration;
+  double administrative;
   double network;
-  int queueing;
-  int clust;
-  int other;
+  double queueing;
+  double clust;
+  double other;
 
   PerformanceModel(
       {this.sampletime,

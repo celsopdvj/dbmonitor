@@ -22,57 +22,43 @@ class _PerformancePageState extends State<PerformancePage> {
   static charts.Series seriesIo;
 
   final bool animate;
+  Future<List<PerformanceModel>> _dadosGrafico;
 
-  bool first = true;
-
-  // factory _PerformancePageState.withSampleData() {
-  //   return new _PerformancePageState(
-  //     _createSampleData(),
-  //     animate: true,
-  //   );
-  // }
+  Timer _timer;
+  int _tempoTimer = 10;
+  int _timerAtual;
 
   @override
   void initState() {
+    _timerAtual = _tempoTimer;
+    _dadosGrafico = request.fetchPerformance();
+    startTimer();
     super.initState();
-    if (first) {
-      updateData();
-    }
-    first = false;
   }
-
-  Future<Null> updateData() {
-    setState(() {
-      resetTimer();
-    });
-    return Future.delayed(Duration(seconds: 1), () => null);
-  }
-
-  Timer _timer;
-  int _start = 10;
 
   void resetTimer() {
     setState(() {
-      _start = 10;
+      _timerAtual = _tempoTimer;
+      startTimer();
     });
-    startTimer();
   }
 
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
     if (_timer != null) {
       _timer.cancel();
+      _timerAtual = _tempoTimer;
     }
     _timer = new Timer.periodic(
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start < 1) {
+          if (_timerAtual < 1) {
             timer.cancel();
-            updateData();
+            _dadosGrafico = request.fetchPerformance();
             resetTimer();
           } else {
-            _start = _start - 1;
+            _timerAtual = _timerAtual - 1;
           }
         },
       ),
@@ -81,7 +67,9 @@ class _PerformancePageState extends State<PerformancePage> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    if (_timer != null) {
+      _timer.cancel();
+    }
     super.dispose();
   }
 
@@ -98,12 +86,12 @@ class _PerformancePageState extends State<PerformancePage> {
   Widget build(BuildContext context) {
     return TemplatePage(
         title: "Desempenho",
-        body: RefreshIndicator(
-          onRefresh: updateData,
+        body: Container(
+          // onRefresh: updateData,
           child: ListView(
             children: [
               FutureBuilder(
-                future: request.fetchPerformance(),
+                future: _dadosGrafico,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return buildGraph("CPU", snapshot.data);
@@ -113,7 +101,7 @@ class _PerformancePageState extends State<PerformancePage> {
               ),
               Container(
                 child: Text(
-                  'Próxima atualização em $_start segudos',
+                  'Próxima atualização em $_timerAtual segudos',
                   style: TextStyle(color: Colors.white),
                 ),
                 margin: EdgeInsets.all(5),
