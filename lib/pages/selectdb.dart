@@ -3,6 +3,7 @@ import 'package:dbmonitor/pages/databases.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:dbmonitor/redux/globalvariables.dart' as gv;
 import 'package:dbmonitor/repositories/databaserepository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SelectdbPage extends StatefulWidget {
@@ -14,7 +15,6 @@ class SelectdbPage extends StatefulWidget {
 
 class _SelectdbPageState extends State<SelectdbPage> {
   DatabaseModel dropdownValue;
-
   var dbRepo = DatabaseRepository();
 
   @override
@@ -35,6 +35,10 @@ class _SelectdbPageState extends State<SelectdbPage> {
                 StreamBuilder(
                   stream: dbRepo.databases,
                   builder: (context, snapshot) {
+                    print(FirebaseAuth.instance.currentUser.uid);
+                    if (snapshot.hasError) {
+                      return Text("Error");
+                    }
                     if (snapshot.hasData) {
                       return DropdownButton<DatabaseModel>(
                         hint: Text(

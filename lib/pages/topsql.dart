@@ -1,7 +1,6 @@
 import 'package:dbmonitor/pages/template.dart';
 import 'package:dbmonitor/pages/topsqldetails.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class Topsql extends StatefulWidget {
   Topsql({Key key}) : super(key: key);

@@ -1,16 +1,14 @@
-import 'package:dbmonitor/pages/databases.dart';
 import 'package:dbmonitor/pages/login.dart';
-import 'package:dbmonitor/pages/template.dart';
-import 'package:dbmonitor/redux/globalvariables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:dbmonitor/redux/globalvariables.dart' as gv;
 
-import 'models/databasemodel.dart';
 import 'pages/login.dart';
 import 'pages/selectdb.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -38,10 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseAuth.instance.onAuthStateChanged,
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          FirebaseUser user = snapshot.data;
           return SelectdbPage();
         }
         return LoginPage();

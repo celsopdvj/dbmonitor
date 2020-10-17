@@ -3,6 +3,7 @@ import 'package:dbmonitor/models/databasemodel.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:dbmonitor/redux/globalvariables.dart';
 import 'package:dbmonitor/repositories/databaserepository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DatabasesPage extends StatefulWidget {
@@ -163,7 +164,7 @@ class _DatabasesPageState extends State<DatabasesPage> {
                       db.user = cntUser.text;
                       db.password = cntSenha.text;
                       db.port = int.parse(cntPort.text);
-                      db.uiduser = GlobalVariables.uuidUser;
+                      db.uiduser = FirebaseAuth.instance.currentUser.uid;
                       dbRespo.add(db);
 
                       CustomDialog.show(

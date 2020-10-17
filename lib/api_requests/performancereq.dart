@@ -4,10 +4,10 @@ import 'package:dbmonitor/api_models/performancemodel.dart';
 import 'package:http/http.dart' as http;
 
 class PerformanceRequest {
-  Future<List<PerformanceModel>> fetchPerformance({int minutes = 30}) async {
+  Future<List<PerformanceModel>> fetchPerformance({int minutes = 420}) async {
     try {
       final response =
-          await http.get('http://10.0.2.2:8000/api/graph?minutes=30');
+          await http.get('http://10.0.2.2:8000/api/graph?minutes=420');
 
       print("acessando api");
 
@@ -24,5 +24,6 @@ class PerformanceRequest {
     } catch (e) {
       print(e);
     }
+    return null;
   }
 }

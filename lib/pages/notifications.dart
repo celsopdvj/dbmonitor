@@ -1,4 +1,3 @@
-import 'package:dbmonitor/main.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

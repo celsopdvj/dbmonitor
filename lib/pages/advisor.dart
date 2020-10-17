@@ -81,6 +81,7 @@ class _AdvisorPageState extends State<AdvisorPage> {
         return buildHitRatio();
         break;
       default:
+        return null;
     }
   }
 

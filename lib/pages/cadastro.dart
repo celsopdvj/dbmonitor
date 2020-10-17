@@ -1,7 +1,6 @@
 import 'package:dbmonitor/dialogs/customdialog.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:flutter/material.dart';
-import 'package:dbmonitor/repositories/userrepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CadastroPage extends StatefulWidget {
@@ -18,8 +17,6 @@ class _CadastroPageState extends State<CadastroPage> {
   var cntEmail = TextEditingController();
   var cntSenha = TextEditingController();
   var cntConfSenha = TextEditingController();
-
-  var userRep = UserRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +98,7 @@ class _CadastroPageState extends State<CadastroPage> {
                     if (_formKey.currentState.validate()) {
                       try {
                         var res = await FirebaseAuth.instance
-                            .fetchSignInMethodsForEmail(email: cntEmail.text);
+                            .fetchSignInMethodsForEmail(cntEmail.text);
 
                         if (res.length > 0) {
                           CustomDialog.show(
@@ -110,20 +107,18 @@ class _CadastroPageState extends State<CadastroPage> {
                           return;
                         }
 
-                        AuthResult result = await FirebaseAuth.instance
+                        UserCredential result = await FirebaseAuth.instance
                             .createUserWithEmailAndPassword(
                                 email: cntEmail.text, password: cntSenha.text);
 
-                        UserUpdateInfo info = UserUpdateInfo();
-                        info.displayName = cntNome.text;
-                        result.user.updateProfile(info);
+                        result.user.updateProfile(displayName: cntNome.text);
 
                         CustomDialog.show(
                             message: "Conta criada com sucesso!",
                             context: context,
                             error: false);
 
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
                       } catch (e) {
                         CustomDialog.show(message: e.code, context: context);
                       }

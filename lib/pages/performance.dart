@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:dbmonitor/api_models/performancemodel.dart';
 import 'package:dbmonitor/api_requests/performancereq.dart';
 import 'package:dbmonitor/pages/template.dart';
@@ -15,12 +13,6 @@ class PerformancePage extends StatefulWidget {
 }
 
 class _PerformancePageState extends State<PerformancePage> {
-  static charts.Series seriesCpu;
-  static charts.Series seriesRam;
-  static charts.Series seriesHd;
-  static charts.Series seriesWait;
-  static charts.Series seriesIo;
-
   final bool animate;
   Future<List<PerformanceModel>> _dadosGrafico;
 
@@ -76,10 +68,10 @@ class _PerformancePageState extends State<PerformancePage> {
   _PerformancePageState(this.animate);
 
   static var corCpu = charts.MaterialPalette.green.shadeDefault;
-  static var corRam = charts.MaterialPalette.red.shadeDefault;
-  static var corHd = charts.MaterialPalette.blue.shadeDefault;
-  static var corWait = charts.MaterialPalette.yellow.shadeDefault;
-  static var corIo = charts.MaterialPalette.purple.shadeDefault;
+  // static var corRam = charts.MaterialPalette.red.shadeDefault;
+  // static var corHd = charts.MaterialPalette.blue.shadeDefault;
+  // static var corWait = charts.MaterialPalette.yellow.shadeDefault;
+  // static var corIo = charts.MaterialPalette.purple.shadeDefault;
   var request = PerformanceRequest();
 
   @override

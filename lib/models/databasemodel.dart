@@ -15,15 +15,15 @@ class DatabaseModel extends BaseModel {
   DatabaseModel();
 
   DatabaseModel.fromMap(DocumentSnapshot document) {
-    _documentId = document.documentID;
+    _documentId = document.id;
 
-    this.name = document.data["name"];
-    this.host = document.data["host"];
-    this.port = document.data["port"];
-    this.serviceName = document.data["serviceName"];
-    this.user = document.data["user"];
-    this.password = document.data["password"];
-    this.uiduser = document.data["uiduser"];
+    this.name = document.get("name");
+    this.host = document.get("host");
+    this.port = document.get("port");
+    this.serviceName = document.get("serviceName");
+    this.user = document.get("user");
+    this.password = document.get("password");
+    this.uiduser = document.get("uiduser");
   }
 
   @override

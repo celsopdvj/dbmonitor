@@ -4,7 +4,6 @@ import 'package:dbmonitor/pages/password.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:dbmonitor/redux/globalvariables.dart' as gv;
 import 'package:flutter/services.dart';
@@ -19,8 +18,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   var cntEmail = TextEditingController();
   var cntSenha = TextEditingController();
-
   var _formKey = GlobalKey<FormState>();
+  var _focusSenha = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +34,6 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Text(
-                    //   "DbMonitor",
-                    //   style: TextStyle(
-                    //     color: Colors.white,
-                    //     fontFamily: 'Roboto',
-                    //     fontSize: 40,
-                    //   ),
-                    // ),
                     SizedBox(
                       height: 10,
                     ),
@@ -56,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
                     buildTextField(
                       icon: Icons.alternate_email,
                       label: "Email",
+                      onEditingComplete: () => _focusSenha.requestFocus(),
                       controller: cntEmail,
                       validator: (value) {
                         if (value.isEmpty) {
@@ -75,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                     buildTextField(
                         icon: Icons.lock_outline,
                         label: "Senha",
+                        focus: _focusSenha,
                         controller: cntSenha,
                         validator: (value) {
                           if (value.isEmpty) {
@@ -83,23 +76,6 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                         obscure: true),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 20),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PasswordPage()));
-                      },
-                      child: Text("Esqueci minha senha",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.normal,
-                          )),
-                    ),
                     Padding(
                       padding: EdgeInsets.only(bottom: 8),
                     ),
@@ -110,14 +86,32 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
                             try {
-                              var result = await FirebaseAuth.instance
+                              await FirebaseAuth.instance
                                   .signInWithEmailAndPassword(
                                       email: cntEmail.text,
                                       password: cntSenha.text);
-                              gv.GlobalVariables.uuidUser = result.user.uid;
+                            } on FirebaseAuthException catch (e) {
+                              var error = e.code;
+                              var errorMessage = "";
+
+                              switch (error) {
+                                case "invalid-email":
+                                case "wrong-password":
+                                case "user-not-found":
+                                  errorMessage = "E-mail e/ou senha inválidos";
+                                  break;
+                                case "user-disabled":
+                                  errorMessage = "Usuário invativo";
+                                  break;
+                                default:
+                              }
+
+                              CustomDialog.show(
+                                  message: errorMessage, context: context);
                             } catch (e) {
                               CustomDialog.show(
-                                  message: e.code, context: context);
+                                  message: "Erro desconhecido",
+                                  context: context);
                             }
                           }
                         },
@@ -126,31 +120,54 @@ class _LoginPageState extends State<LoginPage> {
                     Padding(
                       padding: EdgeInsets.only(bottom: 8),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CadastroPage()));
-                      },
-                      child: RichText(
-                        text: TextSpan(children: [
-                          TextSpan(
-                            text: "Não tem uma conta? ",
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PasswordPage()));
+                          },
+                          child: Text("Esqueci minha senha",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                letterSpacing: .5,
+                                fontWeight: FontWeight.w600,
+                              )),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 3),
+                        ),
+                        Text("|",
                             style: TextStyle(
                               fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "Cadastre",
+                              color: Colors.white,
+                              letterSpacing: .5,
+                              fontWeight: FontWeight.w600,
+                            )),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 3),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CadastroPage()));
+                          },
+                          child: Text(
+                            "Cadastre-se",
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: .5,
+                                color: Colors.white),
                           ),
-                        ]),
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -168,12 +185,16 @@ class _LoginPageState extends State<LoginPage> {
       {String label,
       IconData icon,
       Function validator,
+      Function onEditingComplete,
+      FocusNode focus,
       bool obscure = false,
       TextEditingController controller}) {
     return TextFormField(
       style: TextStyle(color: Colors.white),
       obscureText: obscure,
       controller: controller,
+      onEditingComplete: onEditingComplete,
+      focusNode: focus,
       decoration: InputDecoration(
         prefixIcon: Icon(
           icon,

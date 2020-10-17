@@ -38,7 +38,6 @@ class TemplatePage extends StatelessWidget {
                         onPressed: () async {
                           await FirebaseAuth.instance.signOut();
                           GlobalVariables.database = null;
-                          GlobalVariables.uuidUser = "";
                         },
                       )
                     ]
@@ -65,34 +64,36 @@ class TemplatePage extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
-                      title: FutureBuilder(
-                        future: FirebaseAuth.instance.currentUser(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            FirebaseUser user = snapshot.data;
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  user.displayName,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18),
-                                ),
-                                Text(
-                                  user.email,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                          return Text("Loading...");
-                        },
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            // FirebaseAuth.instance.currentUser != null &&
+                            //         FirebaseAuth
+                            //                 .instance.currentUser.displayName !=
+                            //             null
+                            //     ? FirebaseAuth.instance.currentUser.displayName
+                            //     : "Não logado",
+                            "Não logado",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
+                          Text(
+                            // FirebaseAuth.instance.currentUser != null &&
+                            //         FirebaseAuth.instance.currentUser.email !=
+                            //             null
+                            //     ? FirebaseAuth.instance.currentUser.email
+                            //     : "Não logado",
+                            "Não logado",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
                       ),
                       onTap: () {},
                     ),
