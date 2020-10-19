@@ -7,7 +7,7 @@ class PerformanceRequest {
   Future<List<PerformanceModel>> fetchPerformance({int minutes = 420}) async {
     try {
       final response =
-          await http.get('http://10.0.2.2:8000/api/graph?minutes=420');
+          await http.get('http://192.168.15.14:8000/graph?minutes=420');
 
       print("acessando api");
 

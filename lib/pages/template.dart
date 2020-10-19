@@ -60,7 +60,7 @@ class TemplatePage extends StatelessWidget {
                       contentPadding: EdgeInsets.fromLTRB(15, 30, 5, 0),
                       leading: CircleAvatar(
                         child: Icon(
-                          Icons.person_rounded,
+                          Icons.person,
                           color: Colors.white,
                         ),
                       ),
@@ -69,25 +69,14 @@ class TemplatePage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            // FirebaseAuth.instance.currentUser != null &&
-                            //         FirebaseAuth
-                            //                 .instance.currentUser.displayName !=
-                            //             null
-                            //     ? FirebaseAuth.instance.currentUser.displayName
-                            //     : "Não logado",
-                            "Não logado",
+                            GlobalVariables.userName,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18),
                           ),
                           Text(
-                            // FirebaseAuth.instance.currentUser != null &&
-                            //         FirebaseAuth.instance.currentUser.email !=
-                            //             null
-                            //     ? FirebaseAuth.instance.currentUser.email
-                            //     : "Não logado",
-                            "Não logado",
+                            GlobalVariables.email,
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.normal,

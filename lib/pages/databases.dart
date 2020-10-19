@@ -1,7 +1,6 @@
 import 'package:dbmonitor/dialogs/customdialog.dart';
 import 'package:dbmonitor/models/databasemodel.dart';
 import 'package:dbmonitor/pages/template.dart';
-import 'package:dbmonitor/redux/globalvariables.dart';
 import 'package:dbmonitor/repositories/databaserepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
