@@ -73,4 +73,23 @@ class PerformanceModel {
     data['OTHER'] = this.other;
     return data;
   }
+
+  dynamic getProp(String key) => <String, dynamic>{
+        'sampletime': this.sampletime,
+        'cpu': this.cpu,
+        'bcpu': this.bcpu,
+        'cpuorawait': this.cpuorawait,
+        'scheduler': this.scheduler,
+        'uio': this.uio,
+        'sio': this.sio,
+        'concurrency': this.concurrency,
+        'application': this.application,
+        'commit': this.commit,
+        'configuration': this.configuration,
+        'administrative': this.administrative,
+        'network': this.network,
+        'queueing': this.queueing,
+        'clust': this.clust,
+        'other': this.other,
+      }[key];
 }

@@ -43,6 +43,7 @@ dependencies:
   http: ^0.12.2
   flare_flutter: ^2.0.6
   firebase_core: ^0.5.0+1
+  expandable: ^4.1.4
 
 dev_dependencies:
   flutter_test:
