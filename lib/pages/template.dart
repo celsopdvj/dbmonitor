@@ -59,6 +59,7 @@ class TemplatePage extends StatelessWidget {
                     ListTile(
                       contentPadding: EdgeInsets.fromLTRB(15, 30, 5, 0),
                       leading: CircleAvatar(
+                        backgroundColor: Colors.amber,
                         child: Icon(
                           Icons.person,
                           color: Colors.white,

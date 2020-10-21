@@ -1,3 +1,5 @@
+import 'package:dbmonitor/api_models/topsqlmodel.dart';
+import 'package:dbmonitor/api_requests/topsqlreq.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:dbmonitor/pages/topsqldetails.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,8 @@ class _TopsqlState extends State<Topsql> {
     return Future.delayed(Duration(seconds: 1), () => null);
   }
 
+  final topsqlReq = TopsqlRequest();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,23 +25,27 @@ class _TopsqlState extends State<Topsql> {
         title: "Top SQL",
         body: RefreshIndicator(
           onRefresh: refreshPage,
-          child: ListView(
-            children: [
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-            ],
-          ),
+          child: FutureBuilder(
+              future: topsqlReq.fetchTopsql(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<TopsqlModel> dados = snapshot.data;
+                  return ListView(
+                    children: [...dados.map((e) => builTopsql(e)).toList()],
+                  );
+                }
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                  ),
+                );
+              }),
         ),
       ),
     );
   }
 
-  Widget buildNotification() {
+  Widget builTopsql(TopsqlModel sql) {
     return Card(
       color: Colors.grey[800],
       child: Container(
@@ -58,51 +66,159 @@ class _TopsqlState extends State<Topsql> {
                             color: Colors.white),
                       ),
                       TextSpan(
-                        text: "cn7k9ndh900sp",
+                        text: sql.sqlId,
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.lightBlue),
+                            color: Colors.amber),
                       ),
                     ],
                   ),
                 ),
               ),
-              Text(
-                "Módulo: APPLICATION1",
-                style: TextStyle(fontSize: 14, color: Colors.white),
+              Row(
+                children: [
+                  Text(
+                    "Módulo: ",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  Text(
+                    "${sql.modulo}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                "Execuções: 22",
-                style: TextStyle(fontSize: 14, color: Colors.white),
+              Row(
+                children: [
+                  Text(
+                    "Execuções: ",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  Text(
+                    "${sql.execuEs.toInt()}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                "Tempo por Execução: 23s",
-                style: TextStyle(fontSize: 14, color: Colors.white),
+              Row(
+                children: [
+                  Text(
+                    "Tempo por Execução: ",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  Text(
+                    "${sql.tempoExec.toStringAsFixed(2)}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                "Tempo Total: 7m:42s",
-                style: TextStyle(fontSize: 14, color: Colors.white),
+              Row(
+                children: [
+                  Text(
+                    "Tempo Total: ",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  Text(
+                    "${sql.tempoTot.toStringAsFixed(2)}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                "Tuplas por Execução: 2",
-                style: TextStyle(fontSize: 14, color: Colors.white),
+              Row(
+                children: [
+                  Text(
+                    "Tuplas por Execução: ",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  Text(
+                    "${sql.linhaExec.toStringAsFixed(2)}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                "Tuplas total: 44",
-                style: TextStyle(fontSize: 14, color: Colors.white),
+              Row(
+                children: [
+                  Text(
+                    "Tuplas total: ",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  Text(
+                    "${sql.linhasTot.toInt()}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
               ),
               ButtonBarTheme(
                   data: ButtonBarThemeData(),
                   child: ButtonBar(
                     children: <Widget>[
                       FlatButton(
-                        child: const Text('DETALHES'),
+                        child: const Text(
+                          'DETALHES',
+                          style: TextStyle(
+                            color: Colors.amber,
+                          ),
+                        ),
                         onPressed: () => {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => TopsqlDetailsPage()))
+                                  builder: (context) => TopsqlDetailsPage(
+                                      sql.sqlText, sql.sqlId)))
                         },
                       ),
                     ],

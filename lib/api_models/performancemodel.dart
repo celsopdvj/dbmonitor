@@ -1,4 +1,6 @@
-class PerformanceModel {
+import 'basemodel.dart';
+
+class PerformanceModel extends BaseModel {
   String sampletime;
   double cpu;
   double bcpu;
@@ -34,6 +36,7 @@ class PerformanceModel {
       this.clust,
       this.other});
 
+  @override
   PerformanceModel.fromJson(Map<String, dynamic> json) {
     sampletime = json['SAMPLE_TIME'];
     cpu = json['CPU'];
@@ -53,6 +56,7 @@ class PerformanceModel {
     other = json['OTHER'];
   }
 
+  @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['SAMPLE_TIME'] = this.sampletime;

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dbmonitor/api_models/performancemodel.dart';
 import 'package:dbmonitor/api_requests/performancereq.dart';
+import 'package:dbmonitor/dialogs/customdialog.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -319,6 +320,10 @@ class _PerformancePageState extends State<PerformancePage> {
     return FutureBuilder(
       future: _dadosGrafico,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        }
+
         if (snapshot.hasData) {
           List<PerformanceModel> data = snapshot.data;
           return Card(

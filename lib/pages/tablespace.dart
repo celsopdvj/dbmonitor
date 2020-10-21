@@ -1,6 +1,9 @@
+import 'package:dbmonitor/api_models/tablespacemodel.dart';
+import 'package:dbmonitor/api_requests/tablespacesreq.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class TablespacePage extends StatefulWidget {
@@ -13,6 +16,8 @@ class TablespacePage extends StatefulWidget {
 class _TablespacePageState extends State<TablespacePage> {
   var format = NumberFormat("#,##0.00");
 
+  final tbsRequest = TablespaceRequest();
+
   Future<Null> refreshPage() {
     return Future.delayed(Duration(seconds: 1), () => null);
   }
@@ -22,21 +27,37 @@ class _TablespacePageState extends State<TablespacePage> {
     return TemplatePage(
       body: RefreshIndicator(
         onRefresh: refreshPage,
-        child: ListView(
-          children: [
-            buildTablespace("TBSP0001", 1110.0, 1047.0, 0.75),
-            buildTablespace("TBSP0002", 60, 50.2, 0.30),
-            buildTablespace("TBSP0003", 175200, 169481.3, 0.75),
-            buildTablespace("TBSP0004", 1605419.3, 1322860, 0.60),
-          ],
-        ),
+        child: FutureBuilder(
+            future: tbsRequest.fetchTablespace(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<TablespaceModel> tbs = snapshot.data;
+                return ListView(
+                    children: tbs
+                        .map((e) => buildTablespace(
+                            e.tablespacename,
+                            e.sizemb,
+                            e.sizemb - e.freemb,
+                            ((e.maxsizemb - e.maxfreemb) / e.maxsizemb) * 100,
+                            e.status))
+                        .toList());
+              }
+              return Container(
+                height: 270,
+                padding: EdgeInsets.symmetric(vertical: 100, horizontal: 160),
+                color: Colors.grey[800],
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                ),
+              );
+            }),
       ),
       title: "Tablespaces",
     );
   }
 
-  Widget buildTablespace(
-      String tbl, double alocado, double utilizado, double usadoMax) {
+  Widget buildTablespace(String tbl, double alocado, double utilizado,
+      double usadoMax, String status) {
     return Card(
       color: Colors.grey[800],
       child: Container(
@@ -44,54 +65,126 @@ class _TablespacePageState extends State<TablespacePage> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              RichText(
-                text: TextSpan(children: [
-                  TextSpan(
-                      text: tbl,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  WidgetSpan(
-                    child: tbl != "TBSP0004"
-                        ? Icon(
-                            Icons.check,
-                            color: Colors.green,
-                          )
-                        : Icon(
-                            Icons.close,
-                            color: Colors.red,
-                          ),
-                  )
-                ]),
+              Padding(
+                padding: EdgeInsets.only(bottom: 5),
+                child: RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: tbl,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.2,
+                          color: Colors.amber,
+                        )),
+                    WidgetSpan(
+                      child: status == "ONLINE"
+                          ? Icon(
+                              Icons.check,
+                              color: Colors.amber,
+                            )
+                          : Icon(
+                              Icons.close,
+                              color: Colors.amber,
+                            ),
+                    )
+                  ]),
+                ),
               ),
               Text(
                 "Tamanho alocado: ${format.format(alocado)} MB",
-                style: TextStyle(fontSize: 14, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: .8,
+                ),
+              ),
+              SizedBox(
+                height: 2,
               ),
               Text(
                 "Tamanho utilizado: ${format.format(utilizado)} MB",
-                style: TextStyle(fontSize: 14, color: Colors.white),
-              ),
-              Text(
-                "Expansão automática: Sim",
-                style: TextStyle(fontSize: 14, color: Colors.white),
-              ),
-              LinearPercentIndicator(
-                percent: (utilizado / alocado),
-                leading: Text(
-                  "Espaço Alocado Utilizado",
-                  style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: .8,
                 ),
-                progressColor: Colors.blue,
               ),
-              LinearPercentIndicator(
-                percent: usadoMax,
-                leading: Text(
-                  "Espaço Utilizado do Máx.",
-                  style: TextStyle(color: Colors.white),
-                ),
-                progressColor: Colors.blue,
+              SizedBox(
+                height: 2,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        CircularPercentIndicator(
+                          radius: 100,
+                          percent: (utilizado / alocado),
+                          center: Text(
+                            "${((utilizado / alocado) * 100).toStringAsFixed(2)}%",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          progressColor: Colors.amber,
+                          backgroundColor: Colors.grey,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Espaço Alocado Utilizado",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 120,
+                    child: VerticalDivider(
+                      color: Colors.white,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        CircularPercentIndicator(
+                          radius: 100,
+                          percent: usadoMax / 100,
+                          center: Text(
+                            "${(usadoMax).toStringAsFixed(2)}%",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          progressColor: Colors.amber,
+                          backgroundColor: Colors.grey,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("Espaço Utilizado do Máx.",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ]),
       ),

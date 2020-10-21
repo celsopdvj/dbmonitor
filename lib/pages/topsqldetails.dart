@@ -3,46 +3,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 
 class TopsqlDetailsPage extends StatefulWidget {
-  TopsqlDetailsPage({Key key}) : super(key: key);
+  final String sqlText;
+  final String sqlId;
+
+  TopsqlDetailsPage(this.sqlText, this.sqlId, {Key key}) : super(key: key);
 
   @override
-  _TopsqlDetailsPageState createState() => _TopsqlDetailsPageState();
+  _TopsqlDetailsPageState createState() =>
+      _TopsqlDetailsPageState(sqlText, sqlId);
 }
 
 class _TopsqlDetailsPageState extends State<TopsqlDetailsPage> {
-  String sqlText =
-      "SELECT table_owner,\n       table_name,\n       owner AS index_owner,\n       index_name,\n       tablespace_name,\n       num_rows,\n       status,\n       index_type\nFROM   dba_indexes\nWHERE  table_owner = UPPER('&1')\nAND    table_name = DECODE(UPPER('&2'), 'ALL', table_name, UPPER('&2'))\nORDER BY table_owner, table_name, index_owner, index_name;";
+  final String sqlText;
+  final String sqlId;
+
+  _TopsqlDetailsPageState(this.sqlText, this.sqlId);
 
   static final customTheme = {
     'root':
         TextStyle(backgroundColor: Colors.grey[850], color: Color(0xffdddddd)),
-    'tag': TextStyle(color: Color(0xfff92672)),
-    'keyword': TextStyle(color: Color(0xfff92672), fontWeight: FontWeight.bold),
+    'tag': TextStyle(color: Color(0xff3978DE)),
+    'keyword': TextStyle(color: Color(0xff3978DE), fontWeight: FontWeight.bold),
     'selector-tag':
-        TextStyle(color: Color(0xfff92672), fontWeight: FontWeight.bold),
-    'literal': TextStyle(color: Color(0xfff92672), fontWeight: FontWeight.bold),
-    'strong': TextStyle(color: Color(0xfff92672)),
-    'name': TextStyle(color: Color(0xfff92672)),
+        TextStyle(color: Color(0xff3978DE), fontWeight: FontWeight.bold),
+    'literal': TextStyle(color: Color(0xff3978DE), fontWeight: FontWeight.bold),
+    'strong': TextStyle(color: Color(0xff3978DE)),
+    'name': TextStyle(color: Color(0xff3978DE)),
     'code': TextStyle(color: Color(0xff66d9ef)),
     'attribute': TextStyle(color: Color(0xffbf79db)),
     'symbol': TextStyle(color: Color(0xffbf79db)),
     'regexp': TextStyle(color: Color(0xffbf79db)),
     'link': TextStyle(color: Color(0xffbf79db)),
-    'string': TextStyle(color: Color(0xffa6e22e)),
-    'bullet': TextStyle(color: Color(0xffa6e22e)),
-    'subst': TextStyle(color: Color(0xffa6e22e)),
-    'title': TextStyle(color: Color(0xffa6e22e), fontWeight: FontWeight.bold),
-    'section': TextStyle(color: Color(0xffa6e22e), fontWeight: FontWeight.bold),
-    'emphasis': TextStyle(color: Color(0xffa6e22e)),
-    'type': TextStyle(color: Color(0xffa6e22e), fontWeight: FontWeight.bold),
-    'built_in': TextStyle(color: Color(0xffa6e22e)),
-    'builtin-name': TextStyle(color: Color(0xffa6e22e)),
-    'selector-attr': TextStyle(color: Color(0xffa6e22e)),
-    'selector-pseudo': TextStyle(color: Color(0xffa6e22e)),
-    'addition': TextStyle(color: Color(0xffa6e22e)),
-    'variable': TextStyle(color: Color(0xffa6e22e)),
-    'template-tag': TextStyle(color: Color(0xffa6e22e)),
-    'template-variable': TextStyle(color: Color(0xffa6e22e)),
+    'string': TextStyle(color: Color(0xffffbf00)),
+    'bullet': TextStyle(color: Color(0xffffbf00)),
+    'subst': TextStyle(color: Color(0xffffbf00)),
+    'title': TextStyle(color: Color(0xffffbf00), fontWeight: FontWeight.bold),
+    'section': TextStyle(color: Color(0xffffbf00), fontWeight: FontWeight.bold),
+    'emphasis': TextStyle(color: Color(0xffffbf00)),
+    'type': TextStyle(color: Color(0xffffbf00), fontWeight: FontWeight.bold),
+    'built_in': TextStyle(color: Color(0xffffbf00)),
+    'builtin-name': TextStyle(color: Color(0xffffbf00)),
+    'selector-attr': TextStyle(color: Color(0xffffbf00)),
+    'selector-pseudo': TextStyle(color: Color(0xffffbf00)),
+    'addition': TextStyle(color: Color(0xffffbf00)),
+    'variable': TextStyle(color: Color(0xffffbf00)),
+    'template-tag': TextStyle(color: Color(0xffffbf00)),
+    'template-variable': TextStyle(color: Color(0xffffbf00)),
     'comment': TextStyle(color: Color(0xff75715e)),
     'quote': TextStyle(color: Color(0xff75715e)),
     'deletion': TextStyle(color: Color(0xff75715e)),
@@ -56,18 +62,29 @@ class _TopsqlDetailsPageState extends State<TopsqlDetailsPage> {
     return TemplatePage(
       title: "Detalhes do SQL",
       leading: false,
-      body: Column(
+      body: ListView(
         children: [
           Container(
             padding: EdgeInsets.all(8),
-            child: Text(
-              "SQL ID: cn7k9ndh900sp",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+            child: RichText(
+              text: TextSpan(
+                children: <TextSpan>[
+                  TextSpan(
+                    text: "SQL ID: ",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  TextSpan(
+                    text: this.sqlId,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber),
+                  ),
+                ],
+              ),
             ),
           ),
           Container(
