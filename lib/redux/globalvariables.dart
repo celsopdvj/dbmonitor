@@ -14,6 +14,7 @@ String userReducer(String newUuid, dynamic action) {
 
 class GlobalVariables {
   static DatabaseModel database;
+  static String connectionString;
 
   static get userName => FirebaseAuth.instance.currentUser != null &&
           FirebaseAuth.instance.currentUser.displayName != null &&

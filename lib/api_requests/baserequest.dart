@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dbmonitor/redux/globalvariables.dart';
 import 'package:http/http.dart' as http;
 
 class BaseRequest {
@@ -6,7 +7,14 @@ class BaseRequest {
 
   Future<List> fetch(String url) async {
     try {
-      final response = await http.get('$baseUrl$url');
+      final response = await http.post(
+        '$baseUrl$url',
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: json.encode(GlobalVariables.connectionString),
+      );
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);

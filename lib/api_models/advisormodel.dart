@@ -1,14 +1,16 @@
 class AdvisorModel {
   double tamanhoGB;
   double fator;
-  int tempoEstimado;
+  double tempoEstimado;
   int consistentGets;
   int dBBlockGets;
   int physicalReads;
+  double sizefactor;
   double hitRatio;
 
   AdvisorModel(
-      {this.consistentGets,
+      {this.sizefactor,
+      this.consistentGets,
       this.dBBlockGets,
       this.physicalReads,
       this.hitRatio,
@@ -24,6 +26,7 @@ class AdvisorModel {
     dBBlockGets = json['DB Block Gets'];
     physicalReads = json['Physical Reads'];
     hitRatio = json['Hit Ratio %'];
+    sizefactor = json['SIZE_FACTOR'];
   }
 
   Map<String, dynamic> toJson() {
@@ -35,6 +38,7 @@ class AdvisorModel {
     data['DB Block Gets'] = this.dBBlockGets;
     data['Physical Reads'] = this.physicalReads;
     data['Hit Ratio %'] = this.hitRatio;
+    data['SIZE_FACTOR'] = this.sizefactor;
     return data;
   }
 
@@ -46,5 +50,6 @@ class AdvisorModel {
         'dBBlockGets': this.dBBlockGets,
         'physicalReads': this.physicalReads,
         'hitRatio': this.hitRatio,
+        'sizefactor': this.sizefactor,
       }[key];
 }

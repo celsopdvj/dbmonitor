@@ -37,6 +37,7 @@ class _SelectdbPageState extends State<SelectdbPage> {
                   builder: (context, snapshot) {
                     print(FirebaseAuth.instance.currentUser.uid);
                     if (snapshot.hasError) {
+                      print(snapshot.error.toString());
                       return Text("Error");
                     }
                     if (snapshot.hasData) {
@@ -55,11 +56,14 @@ class _SelectdbPageState extends State<SelectdbPage> {
                           height: 2,
                           color: Colors.white,
                         ),
-                        onChanged: (DatabaseModel newValue) {
+                        onChanged: (DatabaseModel nv) {
                           setState(() {
-                            dropdownValue = newValue;
+                            dropdownValue = nv;
 
-                            gv.GlobalVariables.database = newValue;
+                            gv.GlobalVariables.database = nv;
+                            gv.GlobalVariables.connectionString =
+                                'Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=${nv.host})(PORT=${nv.port})))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=${nv.serviceName})));User Id=${nv.user};Password=${nv.password};';
+
                             gv.GlobalVariables.storeState
                                 .dispatch(gv.Actions.SwitchDatabase);
                           });

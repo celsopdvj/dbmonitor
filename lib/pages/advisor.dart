@@ -1,9 +1,14 @@
+import 'dart:math';
+
 import 'package:dbmonitor/api_models/advisormodel.dart';
 import 'package:dbmonitor/api_requests/advisorreq.dart';
 import 'package:dbmonitor/custom_charts/gauge.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter/src/text_element.dart' as tx;
+import 'package:charts_flutter/src/text_style.dart' as ts;
+import 'dart:math' as math;
 
 class AdvisorPage extends StatefulWidget {
   AdvisorPage({Key key}) : super(key: key);
@@ -17,6 +22,9 @@ class _AdvisorPageState extends State<AdvisorPage> {
   String _selectedAdvisor = 'DbCache';
 
   var advRequest = AdvisorRequest();
+
+  static double _curValue = 0;
+  static double _curFactor = 0;
 
   var cores = [
     charts.MaterialPalette.green.shadeDefault,
@@ -90,9 +98,13 @@ class _AdvisorPageState extends State<AdvisorPage> {
   Widget buildVisualizacao() {
     switch (_selectedAdvisor) {
       case 'DbCache':
+        return buildDefault('DbCache');
+        break;
       case 'Memory Target':
+        return buildDefault('MemoryTarget');
+        break;
       case 'PGA':
-        return buildDefault();
+        return buildDefault('PGA');
         break;
       case 'Hit Ratio':
         return buildHitRatio();
@@ -102,9 +114,9 @@ class _AdvisorPageState extends State<AdvisorPage> {
     }
   }
 
-  Widget buildDefault() {
+  Widget buildDefault(String endpoint) {
     return FutureBuilder(
-      future: advRequest.fetchAdvisor(tipo: _selectedAdvisor),
+      future: advRequest.fetchAdvisor(tipo: endpoint),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<AdvisorModel> dados = snapshot.data;
@@ -126,72 +138,87 @@ class _AdvisorPageState extends State<AdvisorPage> {
   }
 
   Widget buildGraph(List<AdvisorModel> adv) {
-    return Card(
-      color: Colors.grey[800],
-      child: Container(
-        height: MediaQuery.of(context).size.height * .75,
-        padding: EdgeInsets.all(10),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                _selectedAdvisor,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * .65,
-                child: charts.BarChart(
-                  [
-                    buildSeries("id", cores[0], adv),
-                  ],
-                  animate: true,
-                  selectionModels: [
-                    charts.SelectionModelConfig(
-                        changedListener: (charts.SelectionModel model) {
-                      if (model.hasDatumSelection)
-                        print(model.selectedSeries[0]
-                            .measureFn(model.selectedDatum[0].index));
-                    })
-                  ],
-                  primaryMeasureAxis: charts.NumericAxisSpec(
-                    renderSpec: new charts.GridlineRendererSpec(
-                      labelStyle: new charts.TextStyleSpec(
-                        fontSize: 12,
-                        color: charts.MaterialPalette.white,
-                      ),
-                      lineStyle: new charts.LineStyleSpec(
-                        color: charts.MaterialPalette.white,
-                      ),
+    return adv.length == 0
+        ? Card(
+            color: Colors.grey[800],
+            child: Container(
+              height: 80,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Advisor não configurado para a instância',
+                    style: TextStyle(
+                      color: Colors.white,
                     ),
                   ),
-                  domainAxis: new charts.AxisSpec(
-                    renderSpec: new charts.SmallTickRendererSpec(
-                      labelStyle: new charts.TextStyleSpec(
-                        fontSize: 12,
-                        color: charts.MaterialPalette.white,
-                      ),
-                      lineStyle: new charts.LineStyleSpec(
-                        color: charts.MaterialPalette.white,
+                ],
+              ),
+            ),
+          )
+        : Card(
+            color: Colors.grey[800],
+            child: Container(
+              height: MediaQuery.of(context).size.height * .75,
+              padding: EdgeInsets.all(10),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      _selectedAdvisor,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * .65,
+                      child: charts.LineChart(
+                        <charts.Series<LinearSerie, num>>[
+                          buildSeries("id", cores[0], adv),
+                        ],
+                        animate: true,
+                        selectionModels: [
+                          charts.SelectionModelConfig(
+                              changedListener: (charts.SelectionModel model) {
+                            if (model.hasDatumSelection) {
+                              _curFactor = model.selectedSeries[0]
+                                  .domainFn(model.selectedDatum[0].index);
+                              _curValue = model.selectedSeries[0]
+                                  .measureFn(model.selectedDatum[0].index);
+                            }
+                          })
+                        ],
+                        behaviors: [
+                          charts.LinePointHighlighter(
+                            symbolRenderer: CustomCircleSymbolRenderer(),
+                          )
+                        ],
+                        customSeriesRenderers: [
+                          charts.LineRendererConfig(
+                              includeArea: true,
+                              customRendererId: 'customArea',
+                              includePoints: true,
+                              areaOpacity: 0.3)
+                        ],
                       ),
                     ),
-                  ),
-                  customSeriesRenderers: [
-                    charts.LineRendererConfig(
-                        includeArea: true,
-                        customRendererId: 'customArea',
-                        includePoints: true,
-                        areaOpacity: 0.3)
-                  ],
-                ),
-              ),
-            ]),
-      ),
-    );
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Tamanho atual: ${adv.firstWhere((AdvisorModel el) => el.sizefactor == 1).tamanhoGB.toString()} GB',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    )
+                  ]),
+            ),
+          );
   }
 
   Widget buildHitRatio() {
@@ -208,26 +235,26 @@ class _AdvisorPageState extends State<AdvisorPage> {
     );
   }
 
-  charts.Series<LinearSerie, String> buildSeries(
+  charts.Series<LinearSerie, num> buildSeries(
       String id, dynamic cor, List<AdvisorModel> data) {
-    return charts.Series<LinearSerie, String>(
+    return charts.Series<LinearSerie, num>(
       id: id,
       domainFn: (LinearSerie serie, _) => serie.nome,
       measureFn: (LinearSerie serie, _) => serie.medida,
-      data: compileData(id, data),
+      data: compileData(data),
       colorFn: (_, __) => cor,
     )..setAttribute(charts.rendererIdKey, 'customArea');
   }
 
-  List<LinearSerie> compileData(String id, List<AdvisorModel> data) {
+  List<LinearSerie> compileData(List<AdvisorModel> data) {
     return data
-        .map((e) => LinearSerie(e.tamanhoGB.toString(), e.fator))
+        .map((AdvisorModel e) => LinearSerie(e.tamanhoGB, e.fator))
         .toList();
   }
 }
 
 class LinearSerie {
-  final String nome;
+  final double nome;
   final double medida;
 
   LinearSerie(this.nome, this.medida);
@@ -239,4 +266,32 @@ class GraphId {
   bool selected;
 
   GraphId(this.name, this.id, {this.selected = true});
+}
+
+class CustomCircleSymbolRenderer extends charts.CircleSymbolRenderer {
+  @override
+  void paint(charts.ChartCanvas canvas, Rectangle<num> bounds,
+      {List<int> dashPattern,
+      charts.Color fillColor,
+      charts.FillPatternType fillPattern,
+      charts.Color strokeColor,
+      double strokeWidthPx}) {
+    super.paint(canvas, bounds,
+        dashPattern: dashPattern,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidthPx: strokeWidthPx);
+
+    var textStyle = ts.TextStyle();
+    textStyle.color = charts.Color.white;
+    textStyle.fontSize = 15;
+
+    canvas.drawText(
+        tx.TextElement(
+          '${_AdvisorPageState._curFactor.toStringAsFixed(2)} GB / Fator ${_AdvisorPageState._curValue}',
+          style: textStyle,
+        ),
+        (bounds.left).round(),
+        (bounds.top - 28).round());
+  }
 }

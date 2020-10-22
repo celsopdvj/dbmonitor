@@ -84,10 +84,13 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
                             try {
-                              await FirebaseAuth.instance
+                              UserCredential credential = await FirebaseAuth
+                                  .instance
                                   .signInWithEmailAndPassword(
                                       email: cntEmail.text,
                                       password: cntSenha.text);
+                              print("credential.user" +
+                                  credential.user.displayName);
                             } on FirebaseAuthException catch (e) {
                               var error = e.code;
                               var errorMessage = "";
