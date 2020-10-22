@@ -2,9 +2,9 @@ class AdvisorModel {
   double tamanhoGB;
   double fator;
   double tempoEstimado;
-  int consistentGets;
-  int dBBlockGets;
-  int physicalReads;
+  double consistentGets;
+  double dBBlockGets;
+  double physicalReads;
   double sizefactor;
   double hitRatio;
 

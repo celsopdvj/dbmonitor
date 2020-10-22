@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CustomDialog {
-  static Future<Widget> show({String message, bool error = true, context}) {
+  static Future<Widget> show(
+      {String message, bool error = true, context, bool dismissible = true}) {
     return showDialog(
+      barrierDismissible: dismissible,
       child: Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: EdgeInsets.all(10),

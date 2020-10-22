@@ -116,9 +116,13 @@ class _CadastroPageState extends State<CadastroPage> {
                         CustomDialog.show(
                             message: "Conta criada com sucesso!",
                             context: context,
-                            error: false);
+                            error: false,
+                            dismissible: false);
 
-                        // Navigator.of(context).pop();
+                        await Future.delayed(
+                            const Duration(seconds: 1), () => "1");
+
+                        Navigator.popUntil(context, ModalRoute.withName('/'));
                       } catch (e) {
                         CustomDialog.show(message: e.code, context: context);
                       }

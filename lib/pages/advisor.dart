@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:dbmonitor/api_models/advisormodel.dart';
 import 'package:dbmonitor/api_requests/advisorreq.dart';
-import 'package:dbmonitor/custom_charts/gauge.dart';
 import 'package:dbmonitor/pages/template.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:charts_flutter/src/text_element.dart' as tx;
 import 'package:charts_flutter/src/text_style.dart' as ts;
-import 'dart:math' as math;
+
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class AdvisorPage extends StatefulWidget {
   AdvisorPage({Key key}) : super(key: key);
@@ -21,7 +21,15 @@ class _AdvisorPageState extends State<AdvisorPage> {
   var _advisors = ['DbCache', 'Memory Target', 'PGA', 'Hit Ratio'];
   String _selectedAdvisor = 'DbCache';
 
-  var advRequest = AdvisorRequest();
+  AdvisorRequest advRequest;
+  AdvisorRequest advRequestHit;
+
+  @override
+  void initState() {
+    super.initState();
+    advRequest = AdvisorRequest();
+    advRequestHit = AdvisorRequest();
+  }
 
   static double _curValue = 0;
   static double _curFactor = 0;
@@ -88,7 +96,8 @@ class _AdvisorPageState extends State<AdvisorPage> {
                     }),
               ],
             ),
-            buildVisualizacao()
+            _selectedAdvisor != 'Hit Ratio' ? buildVisualizacao() : SizedBox(),
+            _selectedAdvisor == 'Hit Ratio' ? buildHitRatio() : SizedBox(),
           ],
         ),
       ),
@@ -105,9 +114,6 @@ class _AdvisorPageState extends State<AdvisorPage> {
         break;
       case 'PGA':
         return buildDefault('PGA');
-        break;
-      case 'Hit Ratio':
-        return buildHitRatio();
         break;
       default:
         return null;
@@ -176,9 +182,7 @@ class _AdvisorPageState extends State<AdvisorPage> {
                     Container(
                       height: MediaQuery.of(context).size.height * .65,
                       child: charts.LineChart(
-                        <charts.Series<LinearSerie, num>>[
-                          buildSeries("id", cores[0], adv),
-                        ],
+                        buildSeries(_selectedAdvisor, cores[0], adv),
                         animate: true,
                         selectionModels: [
                           charts.SelectionModelConfig(
@@ -209,7 +213,13 @@ class _AdvisorPageState extends State<AdvisorPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Tamanho atual: ${adv.firstWhere((AdvisorModel el) => el.sizefactor == 1).tamanhoGB.toString()} GB',
+                          adv
+                                      .where((AdvisorModel el) =>
+                                          el.sizefactor == 1)
+                                      .length ==
+                                  0
+                              ? ''
+                              : 'Tamanho atual: ${adv.firstWhere((AdvisorModel el) => el.sizefactor == 1).tamanhoGB.toString()} GB',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -222,28 +232,68 @@ class _AdvisorPageState extends State<AdvisorPage> {
   }
 
   Widget buildHitRatio() {
-    return Column(
-      children: [
-        Container(
-            height: MediaQuery.of(context).size.height * .6,
-            child: GaugeChart.withSampleData()),
-        Text(
-          "Hit Ratio: 97%",
-          style: TextStyle(color: Colors.deepOrangeAccent, fontSize: 20),
-        )
-      ],
+    return FutureBuilder(
+      future: advRequestHit.fetchAdvisor(tipo: 'HitRatio'),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<AdvisorModel> dados = snapshot.data;
+          return Container(
+            margin: EdgeInsets.only(top: 15),
+            color: Colors.grey[800],
+            padding: EdgeInsets.symmetric(vertical: 20),
+            height: MediaQuery.of(context).size.height * .5,
+            width: MediaQuery.of(context).size.width * .95,
+            child: Column(
+              children: [
+                CircularPercentIndicator(
+                  radius: 250,
+                  percent: dados.first.hitRatio == null
+                      ? 0
+                      : dados.first.hitRatio / 100,
+                  center: Text(
+                    "${dados.first.hitRatio == null ? 0 : dados.first.hitRatio.toStringAsFixed(2)}%",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  progressColor: Colors.amber,
+                  backgroundColor: Colors.grey,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Hit Ratio",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+          ),
+        );
+      },
     );
   }
 
-  charts.Series<LinearSerie, num> buildSeries(
+  List<charts.Series<LinearSerie, num>> buildSeries(
       String id, dynamic cor, List<AdvisorModel> data) {
-    return charts.Series<LinearSerie, num>(
-      id: id,
-      domainFn: (LinearSerie serie, _) => serie.nome,
-      measureFn: (LinearSerie serie, _) => serie.medida,
-      data: compileData(data),
-      colorFn: (_, __) => cor,
-    )..setAttribute(charts.rendererIdKey, 'customArea');
+    return [
+      charts.Series<LinearSerie, num>(
+        id: id,
+        domainFn: (LinearSerie serie, _) => serie.nome,
+        measureFn: (LinearSerie serie, _) => serie.medida,
+        data: compileData(data),
+        colorFn: (_, __) => cor,
+      )..setAttribute(charts.rendererIdKey, 'customArea')
+    ];
   }
 
   List<LinearSerie> compileData(List<AdvisorModel> data) {

@@ -42,10 +42,7 @@ class _TablespacePageState extends State<TablespacePage> {
                             e.status))
                         .toList());
               }
-              return Container(
-                height: 270,
-                padding: EdgeInsets.symmetric(vertical: 100, horizontal: 160),
-                color: Colors.grey[800],
+              return Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation(Colors.white),
                 ),

@@ -18,6 +18,13 @@ class _LoginPageState extends State<LoginPage> {
   var cntSenha = TextEditingController();
   var _formKey = GlobalKey<FormState>();
   var _focusSenha = FocusNode();
+  bool _estaLogando;
+
+  @override
+  void initState() {
+    super.initState();
+    _estaLogando = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +87,12 @@ class _LoginPageState extends State<LoginPage> {
                     Container(
                       width: MediaQuery.of(context).size.width,
                       child: RaisedButton(
-                        child: Text("Login"),
+                        child: Text(_estaLogando ? "Logando" : "Login"),
                         onPressed: () async {
+                          if (_estaLogando) return false;
+                          setState(() {
+                            _estaLogando = true;
+                          });
                           if (_formKey.currentState.validate()) {
                             try {
                               UserCredential credential = await FirebaseAuth
@@ -114,6 +125,10 @@ class _LoginPageState extends State<LoginPage> {
                                   message: "Erro desconhecido",
                                   context: context);
                             }
+
+                            setState(() {
+                              _estaLogando = false;
+                            });
                           }
                         },
                       ),

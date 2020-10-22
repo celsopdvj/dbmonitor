@@ -51,9 +51,17 @@ class _PasswordPageState extends State<PasswordPage> {
                             await FirebaseAuth.instance
                                 .sendPasswordResetEmail(email: cntEmail.text);
                             CustomDialog.show(
+                                dismissible: false,
+                                error: false,
                                 message:
                                     "E-mail para recuperação de senha enviado",
                                 context: context);
+
+                            await Future.delayed(
+                                const Duration(seconds: 1), () => "1");
+
+                            Navigator.popUntil(
+                                context, ModalRoute.withName('/'));
                           } catch (e) {
                             if (e.code == "ERROR_USER_NOT_FOUND") {
                               CustomDialog.show(
