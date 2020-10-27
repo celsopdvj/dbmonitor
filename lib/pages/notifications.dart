@@ -1,4 +1,7 @@
+import 'package:dbmonitor/api_models/notificationsmodel.dart';
+import 'package:dbmonitor/api_requests/notificationsreq.dart';
 import 'package:dbmonitor/pages/template.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -15,6 +18,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   Future<Null> refreshPage() {
     return Future.delayed(Duration(seconds: 1), () => null);
+  }
+
+  NotificationsRequest notificationsReq;
+  ExpandableController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    notificationsReq = NotificationsRequest();
+    _controller = ExpandableController();
   }
 
   void criarNotificacao() async {
@@ -85,23 +98,29 @@ class _NotificationsPageState extends State<NotificationsPage> {
         title: "Notificações",
         body: RefreshIndicator(
           onRefresh: refreshPage,
-          child: ListView(
-            children: [
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-              buildNotification(),
-            ],
-          ),
+          child: FutureBuilder(
+              future: notificationsReq.fetchNotifications(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<NotificationsModel> dados = snapshot.data;
+                  return ListView(
+                    children: [
+                      ...dados.map((e) => buildNotification(e)).toList()
+                    ],
+                  );
+                }
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                  ),
+                );
+              }),
         ),
       ),
     );
   }
 
-  Widget buildNotification() {
+  Widget buildNotification(NotificationsModel sql) {
     return Card(
       color: Colors.grey[800],
       child: Container(
@@ -109,31 +128,282 @@ class _NotificationsPageState extends State<NotificationsPage> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                "Lock no banco de dados PRODUCAO",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              Text(
-                "Lock no banco de dados PRODUCAO. Usuário CELSO bloqueando o usuáro TESTE.",
-                style: TextStyle(fontSize: 14, color: Colors.white),
-              ),
-              ButtonBarTheme(
-                  data: ButtonBarThemeData(),
-                  child: ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        child: const Text('LIMPAR'),
-                        onPressed: criarNotificacao,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: RichText(
+                  text: TextSpan(
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: sql.cREATIONTIME,
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber),
                       ),
                     ],
-                  ))
+                  ),
+                ),
+              ),
+              buildCorpo(sql),
             ]),
       ),
+    );
+  }
+
+  Widget buildCorpo(NotificationsModel sql) {
+    return Column(
+      children: [
+        ExpandableNotifier(
+          controller: _controller,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              ScrollOnExpand(
+                scrollOnExpand: false,
+                scrollOnCollapse: false,
+                child: ExpandablePanel(
+                  theme: const ExpandableThemeData(
+                    headerAlignment: ExpandablePanelHeaderAlignment.center,
+                    tapBodyToCollapse: false,
+                    tapBodyToExpand: false,
+                    iconColor: Colors.white,
+                  ),
+                  collapsed: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 115,
+                            child: Text(
+                              "Motivo: ",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 240,
+                            child: Text(
+                              "${sql.rEASON}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Ação sugerida: ",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          Container(
+                            width: 240,
+                            child: Text(
+                              "${sql.sUGGESTEDACTION}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Último valor: ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          Text(
+                            "${sql.mETRICVALUE}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Nível: ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          Text(
+                            "${sql.mESSAGETYPE}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        color: Colors.amber,
+                        icon: Icon(Icons.keyboard_arrow_down),
+                        onPressed: () =>
+                            _controller.expanded = !_controller.expanded,
+                      ),
+                    ],
+                  ),
+                  expanded: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 115,
+                            child: Text(
+                              "Motivo: ",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 240,
+                            child: Text(
+                              "${sql.rEASON}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Ação sugerida: ",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          Container(
+                            width: 240,
+                            child: Text(
+                              "${sql.sUGGESTEDACTION}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Último valor: ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          Text(
+                            "${sql.mETRICVALUE}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Nível: ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          Text(
+                            "${sql.mESSAGETYPE}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        color: Colors.amber,
+                        icon: Icon(Icons.keyboard_arrow_up),
+                        onPressed: () =>
+                            _controller.expanded = !_controller.expanded,
+                      ),
+                    ],
+                  ),
+                  builder: (_, collapsed, expanded) {
+                    return Expandable(
+                      collapsed: collapsed,
+                      expanded: expanded,
+                      theme: const ExpandableThemeData(crossFadePoint: 0),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

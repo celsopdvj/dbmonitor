@@ -1,3 +1,4 @@
+import 'package:dbmonitor/pages/home.dart';
 import 'package:dbmonitor/pages/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -39,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return SelectdbPage();
+          return HomePage();
         }
         return LoginPage();
       },

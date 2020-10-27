@@ -1,8 +1,10 @@
 import 'package:dbmonitor/custom_icons/icones_custom_icons.dart';
 import 'package:dbmonitor/pages/advisor.dart';
+import 'package:dbmonitor/pages/home.dart';
 import 'package:dbmonitor/pages/notifications.dart';
 import 'package:dbmonitor/pages/performance.dart';
 import 'package:dbmonitor/pages/reclaimablespace.dart';
+import 'package:dbmonitor/pages/selectdb.dart';
 import 'package:dbmonitor/pages/tablespace.dart';
 import 'package:dbmonitor/pages/longops.dart';
 import 'package:dbmonitor/pages/topsql.dart';
@@ -85,7 +87,13 @@ class TemplatePage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomePage()));
+                      },
                     ),
                     const Divider(
                       color: Colors.white,
@@ -101,7 +109,12 @@ class TemplatePage extends StatelessWidget {
                         style: TextStyle(color: Colors.white),
                       ),
                       onTap: () {
-                        Navigator.popUntil(context, ModalRoute.withName('/'));
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SelectdbPage()));
+                        // Navigator.popUntil(context, ModalRoute.withName('/'));
                       },
                     ),
                     const Divider(

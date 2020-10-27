@@ -1,3 +1,4 @@
+import 'package:dbmonitor/api_requests/notificationsreq.dart';
 import 'package:dbmonitor/models/databasemodel.dart';
 import 'package:dbmonitor/pages/databases.dart';
 import 'package:dbmonitor/pages/template.dart';
@@ -14,15 +15,15 @@ class SelectdbPage extends StatefulWidget {
 }
 
 class _SelectdbPageState extends State<SelectdbPage> {
-  DatabaseModel dropdownValue;
+  DatabaseModel dropdownValue = gv.GlobalVariables.database;
   var dbRepo = DatabaseRepository();
 
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
-        title: "DbMonitor",
-        body: Center(
-            child: Column(
+      title: "Banco de dados",
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
@@ -118,6 +119,8 @@ class _SelectdbPageState extends State<SelectdbPage> {
               ],
             ),
           ],
-        )));
+        ),
+      ),
+    );
   }
 }

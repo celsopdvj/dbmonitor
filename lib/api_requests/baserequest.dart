@@ -6,6 +6,11 @@ class BaseRequest {
   String baseUrl = 'http://10.0.2.2:8000/';
 
   Future<List> fetch(String url) async {
+    if (GlobalVariables.connectionString == null ||
+        GlobalVariables.connectionString == "") {
+      return List();
+    }
+
     try {
       final response = await http.post(
         '$baseUrl$url',
