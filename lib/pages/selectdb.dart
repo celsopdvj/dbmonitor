@@ -21,7 +21,6 @@ class _SelectdbPageState extends State<SelectdbPage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
-      context,
       title: "Banco de dados",
       body: Center(
         child: Column(

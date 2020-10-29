@@ -27,7 +27,6 @@ class _DatabasesPageState extends State<DatabasesPage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
-      context,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(10),

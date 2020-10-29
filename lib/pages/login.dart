@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
-      context,
+      leading: false,
       body: ListView(
         children: [
           Form(

@@ -54,7 +54,6 @@ class _LongopsdetailsPageState extends State<LongopsdetailsPage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
-      context,
       title: "Detalhes da operação",
       leading: false,
       body: Column(

@@ -54,7 +54,6 @@ class _AdvisorPageState extends State<AdvisorPage> {
   Widget build(BuildContext context) {
     return Container(
       child: TemplatePage(
-        context,
         title: "Advisor",
         body: Column(
           children: [

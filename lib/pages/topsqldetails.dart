@@ -60,7 +60,6 @@ class _TopsqlDetailsPageState extends State<TopsqlDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
-      context,
       title: "Detalhes do SQL",
       leading: false,
       body: ListView(

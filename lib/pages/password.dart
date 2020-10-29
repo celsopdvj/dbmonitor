@@ -17,7 +17,6 @@ class _PasswordPageState extends State<PasswordPage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
-      context,
       body: Form(
         key: _formKey,
         child: Center(

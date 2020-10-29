@@ -24,7 +24,6 @@ class _LongopsState extends State<Longops> {
   Widget build(BuildContext context) {
     return Container(
       child: TemplatePage(
-        context,
         title: "Longops",
         body: RefreshIndicator(
           onRefresh: refreshPage,

@@ -25,7 +25,6 @@ class _TablespacePageState extends State<TablespacePage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
-      context,
       body: RefreshIndicator(
         onRefresh: refreshPage,
         child: FutureBuilder(

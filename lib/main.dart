@@ -1,5 +1,6 @@
 import 'package:dbmonitor/pages/home.dart';
 import 'package:dbmonitor/pages/login.dart';
+import 'package:dbmonitor/redux/globalvariables.dart';
 import 'package:dbmonitor/scoped_models/userscopedmodel.dart';
 import 'package:dbmonitor/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    GlobalVariables.context = context;
     return ScopedModel<UserScopedModel>(
         model: _userScopedModel, child: WrapperPage());
   }

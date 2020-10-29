@@ -6,6 +6,7 @@ class NotificationsModel {
   double mETRICVALUE;
   String mESSAGETYPE;
   String mESSAGEGROUP;
+  bool selected;
 
   NotificationsModel(
       {this.rEASON,

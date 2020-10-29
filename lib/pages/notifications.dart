@@ -22,6 +22,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   NotificationsRequest notificationsReq;
   ExpandableController _controller;
+  bool _selectAll = true;
+  List<Categoria> categorias;
 
   @override
   void initState() {
@@ -95,7 +97,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return Container(
       child: TemplatePage(
-        context,
         title: "Notificações",
         body: RefreshIndicator(
           onRefresh: refreshPage,
@@ -104,8 +105,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<NotificationsModel> dados = snapshot.data;
+                  if (categorias == null)
+                    categorias = dados
+                        .map((e) => e.mESSAGETYPE)
+                        .toSet()
+                        .map((e) => Categoria(e, true))
+                        .toList();
                   return ListView(
                     children: [
+                      buildFilter(),
                       ...dados.map((e) => buildNotification(e)).toList()
                     ],
                   );
@@ -122,31 +130,202 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   Widget buildNotification(NotificationsModel sql) {
-    return Card(
-      color: Colors.grey[800],
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: RichText(
-                  text: TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: sql.cREATIONTIME,
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.amber),
-                      ),
-                    ],
+    if (!categorias.any((c) => c.tipo == sql.mESSAGETYPE && c.selected)) {
+      return Container();
+    }
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Card(
+        color: Colors.grey[800],
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: sql.cREATIONTIME,
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.amber),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                buildCorpo(sql),
+              ]),
+        ),
+      ),
+    );
+  }
+
+  Widget buildFilter() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: ExpandableNotifier(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: <Widget>[
+                ScrollOnExpand(
+                  scrollOnExpand: false,
+                  scrollOnCollapse: false,
+                  child: Container(
+                    color: Colors.grey[800],
+                    child: ExpandablePanel(
+                      theme: const ExpandableThemeData(
+                        headerAlignment: ExpandablePanelHeaderAlignment.center,
+                        tapBodyToCollapse: true,
+                        iconColor: Colors.white,
+                      ),
+                      header: Container(
+                        child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              "Filtros",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 1.2,
+                                  fontSize: 18),
+                            )),
+                      ),
+                      expanded: categorias == null
+                          ? Container()
+                          : Container(
+                              height: MediaQuery.of(context).size.height * .3,
+                              child: ListView(
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectAll = !_selectAll;
+                                        categorias.forEach((element) {
+                                          element.selected = _selectAll;
+                                        });
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 4, horizontal: 15),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Selecionar todos",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              letterSpacing: 1,
+                                            ),
+                                          ),
+                                          Theme(
+                                            data: Theme.of(context).copyWith(
+                                              unselectedWidgetColor:
+                                                  Colors.white,
+                                            ),
+                                            child: Checkbox(
+                                              activeColor: Colors.white,
+                                              checkColor: Colors.black,
+                                              value: _selectAll,
+                                              onChanged: (bool value) {
+                                                setState(() {
+                                                  _selectAll = value;
+                                                  categorias.forEach((element) {
+                                                    element.selected =
+                                                        _selectAll;
+                                                  });
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: Colors.white,
+                                  ),
+                                  ...categorias
+                                      .asMap()
+                                      .map((i, Categoria e) => MapEntry(
+                                            i,
+                                            buildCheckBox(e, i),
+                                          ))
+                                      .values
+                                      .toList(),
+                                ],
+                              ),
+                            ),
+                      builder: (_, collapsed, expanded) {
+                        return Padding(
+                          padding:
+                              EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                          child: Expandable(
+                            collapsed: collapsed,
+                            expanded: expanded,
+                            theme: const ExpandableThemeData(crossFadePoint: 0),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildCheckBox(Categoria e, int i) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          categorias[i].selected = !categorias[i].selected;
+        });
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              e.tipo,
+              style: TextStyle(
+                color: Colors.white,
+                letterSpacing: 1,
               ),
-              buildCorpo(sql),
-            ]),
+            ),
+            Theme(
+              data: Theme.of(context).copyWith(
+                unselectedWidgetColor: Colors.white,
+              ),
+              child: Checkbox(
+                activeColor: Colors.white,
+                checkColor: Colors.black,
+                value: e.selected,
+                onChanged: (bool value) {
+                  setState(() {
+                    categorias[i].selected = value;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -389,4 +568,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
       ],
     );
   }
+}
+
+class Categoria {
+  String tipo;
+  bool selected;
+
+  Categoria(this.tipo, this.selected);
 }

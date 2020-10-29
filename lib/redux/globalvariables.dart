@@ -1,5 +1,6 @@
 import 'package:dbmonitor/models/databasemodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 
 enum Actions { SwitchDatabase }
@@ -15,6 +16,7 @@ String userReducer(String newUuid, dynamic action) {
 class GlobalVariables {
   static DatabaseModel database;
   static String connectionString;
+  static BuildContext context;
 
   static get userName => FirebaseAuth.instance.currentUser != null &&
           FirebaseAuth.instance.currentUser.displayName != null &&
