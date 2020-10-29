@@ -2,6 +2,7 @@ import 'package:dbmonitor/dialogs/customdialog.dart';
 import 'package:dbmonitor/pages/cadastro.dart';
 import 'package:dbmonitor/pages/password.dart';
 import 'package:dbmonitor/pages/template.dart';
+import 'package:dbmonitor/scoped_models/userscopedmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
+      context,
       body: ListView(
         children: [
           Form(
@@ -95,13 +97,16 @@ class _LoginPageState extends State<LoginPage> {
                           });
                           if (_formKey.currentState.validate()) {
                             try {
-                              UserCredential credential = await FirebaseAuth
-                                  .instance
-                                  .signInWithEmailAndPassword(
-                                      email: cntEmail.text,
-                                      password: cntSenha.text);
-                              print("credential.user" +
-                                  credential.user.displayName);
+                              // UserCredential credential = await FirebaseAuth
+                              //     .instance
+                              //     .signInWithEmailAndPassword(
+                              //         email: cntEmail.text,
+                              //         password: cntSenha.text);
+                              // print("credential.user" +
+                              //     credential.user.displayName);
+
+                              UserScopedModel.of(context)
+                                  .login(cntEmail.text, cntSenha.text);
                             } on FirebaseAuthException catch (e) {
                               var error = e.code;
                               var errorMessage = "";

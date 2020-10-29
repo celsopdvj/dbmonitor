@@ -1,8 +1,11 @@
 import 'package:dbmonitor/pages/home.dart';
 import 'package:dbmonitor/pages/login.dart';
+import 'package:dbmonitor/scoped_models/userscopedmodel.dart';
+import 'package:dbmonitor/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'pages/login.dart';
 import 'pages/selectdb.dart';
@@ -34,16 +37,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _userScopedModel = UserScopedModel();
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return HomePage();
-        }
-        return LoginPage();
-      },
-    );
+    return ScopedModel<UserScopedModel>(
+        model: _userScopedModel, child: WrapperPage());
   }
 }

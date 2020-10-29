@@ -13,6 +13,7 @@ class _ReclaimablespacePageState extends State<ReclaimablespacePage> {
   Widget build(BuildContext context) {
     return Container(
       child: TemplatePage(
+        context,
         title: "Reclaimable Space",
         body: Text("Reclaim"),
       ),

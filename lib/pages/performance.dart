@@ -115,6 +115,7 @@ class _PerformancePageState extends State<PerformancePage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
+      context,
       title: "Desempenho",
       body: RefreshIndicator(
         onRefresh: updateData,

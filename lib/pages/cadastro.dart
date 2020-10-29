@@ -21,6 +21,7 @@ class _CadastroPageState extends State<CadastroPage> {
   @override
   Widget build(BuildContext context) {
     return TemplatePage(
+      context,
       signOut: false,
       body: Form(
         key: _formKey,

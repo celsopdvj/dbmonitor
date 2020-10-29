@@ -22,6 +22,7 @@ class _TopsqlState extends State<Topsql> {
   Widget build(BuildContext context) {
     return Container(
       child: TemplatePage(
+        context,
         title: "Top SQL",
         body: RefreshIndicator(
           onRefresh: refreshPage,
@@ -130,7 +131,7 @@ class _TopsqlState extends State<Topsql> {
                     ),
                   ),
                   Text(
-                    "${sql.tempoExec.toStringAsFixed(2)}",
+                    "${sql.tempoExec.toStringAsFixed(2)}s",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white,
@@ -151,7 +152,7 @@ class _TopsqlState extends State<Topsql> {
                     ),
                   ),
                   Text(
-                    "${sql.tempoTot.toStringAsFixed(2)}",
+                    "${sql.tempoTot.toStringAsFixed(2)}s",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white,

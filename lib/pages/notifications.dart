@@ -95,6 +95,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return Container(
       child: TemplatePage(
+        context,
         title: "Notificações",
         body: RefreshIndicator(
           onRefresh: refreshPage,
@@ -175,22 +176,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            width: 115,
-                            child: Text(
-                              "Motivo: ",
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                              ),
+                          Text(
+                            "Motivo: ",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
                             ),
                           ),
-                          Container(
-                            width: 240,
+                          Expanded(
                             child: Text(
                               "${sql.rEASON}",
                               maxLines: 1,
@@ -217,8 +214,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                               letterSpacing: 1.2,
                             ),
                           ),
-                          Container(
-                            width: 240,
+                          Expanded(
                             child: Text(
                               "${sql.sUGGESTEDACTION}",
                               maxLines: 1,
@@ -286,41 +282,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 115,
-                            child: Text(
-                              "Motivo: ",
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 240,
-                            child: Text(
-                              "${sql.rEASON}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "Ação sugerida: ",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                      RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: "Motivo: ",
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.white,
@@ -328,18 +293,36 @@ class _NotificationsPageState extends State<NotificationsPage> {
                               letterSpacing: 1.2,
                             ),
                           ),
-                          Container(
-                            width: 240,
-                            child: Text(
-                              "${sql.sUGGESTEDACTION}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                                letterSpacing: 1.2,
-                              ),
+                          TextSpan(
+                            text: sql.rEASON,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
                             ),
                           ),
-                        ],
+                        ]),
+                      ),
+                      RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: "Ação sugerida: ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          TextSpan(
+                            text: sql.sUGGESTEDACTION,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ]),
                       ),
                       Row(
                         children: [

@@ -54,6 +54,7 @@ class _AdvisorPageState extends State<AdvisorPage> {
   Widget build(BuildContext context) {
     return Container(
       child: TemplatePage(
+        context,
         title: "Advisor",
         body: Column(
           children: [
@@ -129,7 +130,10 @@ class _AdvisorPageState extends State<AdvisorPage> {
           return ListView(
             shrinkWrap: true,
             children: [
-              buildGraph(dados),
+              Card(
+                color: Colors.grey[800],
+                child: buildGraph(dados),
+              ),
             ],
           );
         }
@@ -145,89 +149,90 @@ class _AdvisorPageState extends State<AdvisorPage> {
 
   Widget buildGraph(List<AdvisorModel> adv) {
     return adv.length == 0
-        ? Card(
-            color: Colors.grey[800],
-            child: Container(
-              height: 80,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Advisor não configurado para a instância',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+        ? Container(
+            height: 80,
+            width: 380,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Advisor não configurado para a instância',
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           )
-        : Card(
-            color: Colors.grey[800],
-            child: Container(
-              height: MediaQuery.of(context).size.height * .75,
-              padding: EdgeInsets.all(10),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      _selectedAdvisor,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * .65,
-                      child: charts.LineChart(
-                        buildSeries(_selectedAdvisor, cores[0], adv),
-                        animate: true,
-                        selectionModels: [
-                          charts.SelectionModelConfig(
-                              changedListener: (charts.SelectionModel model) {
-                            if (model.hasDatumSelection) {
-                              _curFactor = model.selectedSeries[0]
-                                  .domainFn(model.selectedDatum[0].index);
-                              _curValue = model.selectedSeries[0]
-                                  .measureFn(model.selectedDatum[0].index);
-                            }
-                          })
-                        ],
-                        behaviors: [
-                          charts.LinePointHighlighter(
-                            symbolRenderer: CustomCircleSymbolRenderer(),
-                          )
-                        ],
-                        customSeriesRenderers: [
-                          charts.LineRendererConfig(
-                              includeArea: true,
-                              customRendererId: 'customArea',
-                              includePoints: true,
-                              areaOpacity: 0.3)
-                        ],
+        : Row(
+            children: [
+              RotatedBox(
+                child: Text(
+                  "Tempo Estimado",
+                  style: TextStyle(color: Colors.white),
+                ),
+                quarterTurns: 3,
+              ),
+              Container(
+                width: 380,
+                height: MediaQuery.of(context).size.height * .75,
+                padding: EdgeInsets.all(10),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        _selectedAdvisor,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          adv
-                                      .where((AdvisorModel el) =>
-                                          el.sizefactor == 1)
-                                      .length ==
-                                  0
-                              ? ''
-                              : 'Tamanho atual: ${adv.firstWhere((AdvisorModel el) => el.sizefactor == 1).tamanhoGB.toString()} GB',
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.height * .6,
+                        child: charts.LineChart(
+                          buildSeries(_selectedAdvisor, cores[0], adv),
+                          animate: true,
+                          selectionModels: [
+                            charts.SelectionModelConfig(
+                                changedListener: (charts.SelectionModel model) {
+                              if (model.hasDatumSelection) {
+                                _curFactor = model.selectedSeries[0]
+                                    .domainFn(model.selectedDatum[0].index);
+                                _curValue = model.selectedSeries[0]
+                                    .measureFn(model.selectedDatum[0].index);
+                              }
+                            })
+                          ],
+                          behaviors: [
+                            charts.LinePointHighlighter(
+                              symbolRenderer: CustomCircleSymbolRenderer(),
+                            )
+                          ],
+                          customSeriesRenderers: [
+                            charts.LineRendererConfig(
+                                includeArea: true,
+                                customRendererId: 'customArea',
+                                includePoints: true,
+                                areaOpacity: 0.3)
+                          ],
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                          'Tamanho (GB)',
                           style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
-                      ],
-                    )
-                  ]),
-            ),
+                      ),
+                    ]),
+              ),
+            ],
           );
   }
 
@@ -249,7 +254,7 @@ class _AdvisorPageState extends State<AdvisorPage> {
                   radius: 250,
                   percent: dados.first.hitRatio == null
                       ? 0
-                      : dados.first.hitRatio / 100,
+                      : (dados.first.hitRatio / 100),
                   center: Text(
                     "${dados.first.hitRatio == null ? 0 : dados.first.hitRatio.toStringAsFixed(2)}%",
                     style: TextStyle(

@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Container(
       child: TemplatePage(
+        context,
         title: "DbMonitor",
         body: Column(
           children: <Widget>[
