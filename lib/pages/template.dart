@@ -9,6 +9,7 @@ import 'package:dbmonitor/pages/tablespace.dart';
 import 'package:dbmonitor/pages/longops.dart';
 import 'package:dbmonitor/pages/topsql.dart';
 import 'package:dbmonitor/redux/globalvariables.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TemplatePage extends StatefulWidget {
@@ -46,6 +47,7 @@ class _TemplatePageState extends State<TemplatePage> {
                         icon: Icon(Icons.exit_to_app),
                         onPressed: () async {
                           // UserScopedModel.of(GlobalVariables.context).logOut();
+                          FirebaseAuth.instance.signOut();
                           GlobalVariables.database = null;
                         },
                       )
