@@ -38,12 +38,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _userScopedModel = UserScopedModel();
-
   @override
   Widget build(BuildContext context) {
     GlobalVariables.context = context;
-    return ScopedModel<UserScopedModel>(
-        model: _userScopedModel, child: WrapperPage());
+    return WrapperPage();
   }
 }

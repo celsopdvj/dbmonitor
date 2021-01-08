@@ -80,10 +80,12 @@ class _PerformancePageState extends State<PerformancePage> {
     charts.MaterialPalette.yellow.shadeDefault,
     charts.MaterialPalette.cyan.shadeDefault,
     charts.MaterialPalette.red.shadeDefault,
+    charts.MaterialPalette.lime.shadeDefault,
   ];
 
   final List<GraphId> graficos = [
     GraphId("CPU", "cpu"),
+    GraphId("CPU Wait", "bcpu"),
     GraphId("Scheduler", "scheduler"),
     GraphId("User I/O", "uio"),
     GraphId("System I/O", "sio"),
@@ -94,7 +96,7 @@ class _PerformancePageState extends State<PerformancePage> {
     GraphId("Administrative", "administrative"),
     GraphId("Network", "network"),
     GraphId("Queueing", "queueing"),
-    GraphId("Clust", "clust"),
+    GraphId("Cluster", "clust"),
     GraphId("Other", "other"),
   ];
 

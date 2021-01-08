@@ -97,16 +97,16 @@ class _LoginPageState extends State<LoginPage> {
                           });
                           if (_formKey.currentState.validate()) {
                             try {
-                              // UserCredential credential = await FirebaseAuth
-                              //     .instance
-                              //     .signInWithEmailAndPassword(
-                              //         email: cntEmail.text,
-                              //         password: cntSenha.text);
-                              // print("credential.user" +
-                              //     credential.user.displayName);
+                              UserCredential credential = await FirebaseAuth
+                                  .instance
+                                  .signInWithEmailAndPassword(
+                                      email: cntEmail.text,
+                                      password: cntSenha.text);
+                              print("credential.user" +
+                                  credential.user.displayName);
 
-                              UserScopedModel.of(context)
-                                  .login(cntEmail.text, cntSenha.text);
+                              // UserScopedModel.of(context)
+                              //     .login(cntEmail.text, cntSenha.text);
                             } on FirebaseAuthException catch (e) {
                               var error = e.code;
                               var errorMessage = "";
