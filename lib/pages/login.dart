@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     buildTextField(
                       icon: Icons.alternate_email,
-                      label: "Email",
+                      label: "E-mail",
                       onEditingComplete: () => _focusSenha.requestFocus(),
                       controller: cntEmail,
                       validator: (value) {

@@ -27,7 +27,7 @@ class _PasswordPageState extends State<PasswordPage> {
               children: [
                 buildTextField(
                   icon: Icons.alternate_email,
-                  label: "Email",
+                  label: "E-mail",
                   controller: cntEmail,
                   validator: (value) {
                     if (value.isEmpty) {
@@ -63,7 +63,7 @@ class _PasswordPageState extends State<PasswordPage> {
                             Navigator.popUntil(
                                 context, ModalRoute.withName('/'));
                           } catch (e) {
-                            if (e.code == "ERROR_USER_NOT_FOUND") {
+                            if (e.code == "user-not-found") {
                               CustomDialog.show(
                                   message: "E-mail não cadastrado.",
                                   context: context);
@@ -73,8 +73,6 @@ class _PasswordPageState extends State<PasswordPage> {
                                   message: "E-mail mal formatado.",
                                   context: context);
                             }
-                            CustomDialog.show(
-                                message: e.code, context: context);
                           }
                         }
                       },

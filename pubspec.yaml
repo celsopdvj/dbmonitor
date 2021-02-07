@@ -31,18 +31,15 @@ dependencies:
   charts_flutter: ^0.9.0
   percent_indicator: ^2.1.5
   intl: ^0.16.1
-  flutter_local_notifications: ^1.4.4+4
   flutter_redux: ^0.6.0
   redux: ^4.0.0+3
-  #cloud_firestore: ^0.13.7
-  cloud_firestore: ^0.14.1+3
+  cloud_firestore: ^0.14.4
   flutter_highlight: ^0.6.0
   crypto: ^2.1.0
-  #firebase_auth: ^0.16.0
-  firebase_auth: ^0.18.1+2
+  firebase_auth: ^0.18.4
   http: ^0.12.2
   flare_flutter: ^2.0.6
-  firebase_core: ^0.5.0+1
+  firebase_core: ^0.5.3
   expandable: ^4.1.4
   scoped_model: ^1.1.0
 

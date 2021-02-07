@@ -331,7 +331,7 @@ class _PerformancePageState extends State<PerformancePage> {
           return Card(
             color: Colors.grey[800],
             child: Container(
-              height: 270,
+              height: 300,
               padding: EdgeInsets.all(10),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
