@@ -1,6 +1,7 @@
 import 'package:dbmonitor/custom_icons/icones_custom_icons.dart';
 import 'package:dbmonitor/pages/advisor.dart';
 import 'package:dbmonitor/pages/home.dart';
+import 'package:dbmonitor/pages/login.dart';
 import 'package:dbmonitor/pages/notifications.dart';
 import 'package:dbmonitor/pages/performance.dart';
 import 'package:dbmonitor/pages/reclaimablespace.dart';
@@ -36,6 +37,10 @@ class _TemplatePageState extends State<TemplatePage> {
 
   @override
   Widget build(BuildContext context) {
+    // if (FirebaseAuth.instance.currentUser == null && widget.title != "Login") {
+    //   return LoginPage();
+    // }
+
     return Scaffold(
       appBar: widget.appBar
           ? AppBar(
@@ -49,6 +54,7 @@ class _TemplatePageState extends State<TemplatePage> {
                           // UserScopedModel.of(GlobalVariables.context).logOut();
                           FirebaseAuth.instance.signOut();
                           GlobalVariables.database = null;
+                          Navigator.popUntil(context, ModalRoute.withName('/'));
                         },
                       )
                     ]
@@ -230,23 +236,6 @@ class _TemplatePageState extends State<TemplatePage> {
                                 builder: (context) => AdvisorPage()));
                       },
                     ),
-                    // ListTile(
-                    //   leading: Icon(
-                    //     Icons.data_usage,
-                    //     color: Colors.white,
-                    //   ),
-                    //   title: Text(
-                    //     'Reclaimable Space',
-                    //     style: TextStyle(color: Colors.white),
-                    //   ),
-                    //   onTap: () {
-                    //     Navigator.pop(context);
-                    //     Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //             builder: (context) => ReclaimablespacePage()));
-                    //   },
-                    // ),
                   ],
                 ),
               ),

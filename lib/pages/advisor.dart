@@ -173,7 +173,7 @@ class _AdvisorPageState extends State<AdvisorPage> {
                 quarterTurns: 3,
               ),
               Container(
-                width: 380,
+                width: 360,
                 height: MediaQuery.of(context).size.height * .75,
                 padding: EdgeInsets.all(10),
                 child: Column(
